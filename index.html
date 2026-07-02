@@ -1,0 +1,1681 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Cognizant Compliance Status | Editable Dashboard</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700;800&amp;family=Inter:wght@400;500;600;700&amp;family=JetBrains+Mono:wght@500;700&amp;display=swap" rel="stylesheet">
+<style>
+  :root{
+    --green-900:#0b3d2e; --green-700:#1b5e3f; --green-600:#2e7d52; --green-500:#3d9467;
+    --green-100:#e7f3ec; --green-50:#f4faf7;
+    --amber-600:#b3791b; --amber-100:#fbf1e0;
+    --red-600:#c1443b; --red-100:#fbe9e7;
+    --ink-900:#14201b; --ink-600:#5b6b63; --ink-400:#8b9a92;
+    --line:#dfe8e2; --white:#ffffff; --bg:#f7faf8;
+    --shadow: 0 1px 2px rgba(11,61,46,0.06), 0 6px 20px rgba(11,61,46,0.05);
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    background:radial-gradient(1200px 500px at 100% -10%, var(--green-50) 0%, var(--bg) 55%), var(--bg);
+    color:var(--ink-900); font-family:'Inter',sans-serif; min-height:100vh; -webkit-font-smoothing:antialiased;
+  }
+  .wrap{max-width:1280px;margin:0 auto;padding:28px 32px 64px;}
+
+  .topbar{display:flex;justify-content:space-between;align-items:flex-end;padding-bottom:20px;margin-bottom:20px;border-bottom:1px solid var(--line);animation:dropIn .6s cubic-bezier(.2,.7,.2,1) both;}
+  .brand{display:flex;align-items:center;gap:14px;}
+  .brand-mark{width:44px;height:44px;border-radius:11px;background:linear-gradient(155deg,var(--green-700),var(--green-500));display:flex;align-items:center;justify-content:center;box-shadow:var(--shadow);flex-shrink:0;}
+  .brand-mark svg{width:24px;height:24px;}
+  .brand-text h1{font-family:'Sora',sans-serif;font-weight:700;font-size:20px;margin:0;letter-spacing:-0.01em;}
+  .brand-text .sub{font-size:12.5px;color:var(--ink-600);margin-top:2px;display:flex;align-items:center;gap:7px;}
+  .dot-live{width:7px;height:7px;border-radius:50%;background:var(--green-500);animation:pulse 2s infinite;}
+  @keyframes pulse{0%{box-shadow:0 0 0 0 rgba(61,148,103,.5);}70%{box-shadow:0 0 0 7px rgba(61,148,103,0);}100%{box-shadow:0 0 0 0 rgba(61,148,103,0);}}
+  .clock-block{text-align:right;}
+  .clock-date{font-size:12.5px;color:var(--ink-600);font-weight:500;}
+  .clock-time{font-family:'JetBrains Mono',monospace;font-weight:700;font-size:30px;color:var(--green-900);font-variant-numeric:tabular-nums;line-height:1.15;}
+  .clock-time .secs{color:var(--green-500);}
+
+  .ctrl-row{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:14px;margin-bottom:22px;animation:dropIn .6s .05s cubic-bezier(.2,.7,.2,1) both;}
+  .tab-group{display:inline-flex;background:var(--white);border:1px solid var(--line);border-radius:12px;padding:4px;box-shadow:var(--shadow);}
+  .tab-btn{border:none;background:transparent;padding:9px 20px;font-family:'Sora',sans-serif;font-weight:600;font-size:13.5px;color:var(--ink-600);border-radius:9px;cursor:pointer;transition:.25s;}
+  .tab-btn.active{background:var(--green-700);color:#fff;}
+  .action-group{display:flex;align-items:center;gap:10px;}
+  .btn{
+    display:flex;align-items:center;gap:7px;border:1px solid var(--line);background:var(--white);
+    padding:10px 16px;border-radius:10px;font-family:'Sora',sans-serif;font-weight:600;font-size:13px;
+    color:var(--ink-900);cursor:pointer;box-shadow:var(--shadow);transition:.2s;
+  }
+  .btn:hover{transform:translateY(-1px);}
+  .btn svg{width:15px;height:15px;}
+  .btn.primary{background:var(--green-700);border-color:var(--green-700);color:#fff;}
+  .btn.primary:hover{background:var(--green-900);}
+  .save-status{font-size:11.5px;color:var(--ink-400);}
+  .save-status.flash{color:var(--green-600);font-weight:600;}
+
+  .kpi-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:16px;margin-bottom:26px;}
+  .kpi-card{background:var(--white);border:1px solid var(--line);border-radius:14px;padding:18px 20px;position:relative;overflow:hidden;box-shadow:var(--shadow);animation:riseIn .55s cubic-bezier(.2,.7,.2,1) both;}
+  .kpi-card::before{content:'';position:absolute;left:0;top:0;bottom:0;width:3px;background:var(--accent,var(--green-500));}
+  .kpi-label{font-size:11.5px;text-transform:uppercase;letter-spacing:.06em;color:var(--ink-400);font-weight:600;margin-bottom:10px;}
+  .kpi-value{font-family:'Sora',sans-serif;font-weight:800;font-size:30px;color:var(--ink-900);line-height:1;display:flex;align-items:baseline;gap:4px;}
+  .kpi-value .unit{font-size:15px;font-weight:600;color:var(--ink-400);}
+  .kpi-foot{font-size:11.5px;color:var(--ink-600);margin-top:9px;}
+  .kpi-foot.good{color:var(--green-600);} .kpi-foot.bad{color:var(--red-600);}
+
+  .panel-row{display:grid;grid-template-columns:1.35fr 1fr;gap:18px;margin-bottom:20px;align-items:start;}
+  .panel{background:var(--white);border:1px solid var(--line);border-radius:16px;padding:22px 22px 18px;box-shadow:var(--shadow);animation:riseIn .6s .1s cubic-bezier(.2,.7,.2,1) both;}
+  .panel-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;}
+  .panel-title{font-family:'Sora',sans-serif;font-weight:700;font-size:15px;}
+  .panel-sub{font-size:11.5px;color:var(--ink-400);margin-top:2px;}
+
+  table{width:100%;border-collapse:collapse;font-size:12.6px;}
+  thead th{text-align:left;font-size:10.3px;text-transform:uppercase;letter-spacing:.05em;color:var(--ink-400);font-weight:700;padding:0 8px 10px;border-bottom:1px solid var(--line);white-space:nowrap;}
+  tbody td{padding:8px;border-bottom:1px solid #eef3f0;color:var(--ink-900);}
+  tbody tr:hover{background:var(--green-50);}
+  tbody tr.total-row{font-weight:700;background:var(--green-50);}
+  tbody tr.total-row td{border-bottom:none;border-top:2px solid var(--green-100);}
+  .loc-cell{font-weight:600;display:flex;align-items:center;gap:8px;}
+  .loc-dot{width:6px;height:6px;border-radius:50%;background:var(--green-500);flex-shrink:0;}
+  .pbar-wrap{display:flex;align-items:center;gap:8px;min-width:100px;}
+  .pbar-track{flex:1;height:6px;border-radius:99px;background:#eef3f0;overflow:hidden;}
+  .pbar-fill{height:100%;border-radius:99px;width:0%;transition:width 1s cubic-bezier(.2,.7,.2,1);}
+  .pbar-pct{font-family:'JetBrains Mono',monospace;font-size:11.3px;font-weight:600;width:40px;text-align:right;}
+  .tag{font-size:10px;font-weight:700;padding:3px 8px;border-radius:99px;letter-spacing:.02em;white-space:nowrap;}
+  .tag.ok{background:var(--green-100);color:var(--green-700);}
+  .tag.warn{background:var(--amber-100);color:var(--amber-600);}
+  .tag.risk{background:var(--red-100);color:var(--red-600);}
+  .pct-text{font-family:'JetBrains Mono',monospace;font-weight:700;font-size:12.5px;}
+  #masterTable td{white-space:nowrap;}
+  #masterTable .num-cell{color:var(--ink-600);}
+
+  .bar-row{display:flex;align-items:center;gap:10px;margin-bottom:11px;}
+  .bar-loc{width:78px;font-size:11.5px;color:var(--ink-600);font-weight:600;flex-shrink:0;}
+  .bar-track{flex:1;height:16px;border-radius:5px;background:#eef3f0;overflow:hidden;}
+  .bar-fill{height:100%;border-radius:5px;width:0%;transition:width 1.1s cubic-bezier(.2,.7,.2,1);}
+  .bar-val{width:44px;text-align:right;font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:600;color:var(--ink-700);}
+
+  /* ---- Edit view ---- */
+  #editPanel{display:none;}
+  #historyPanel{display:none;}
+  .delta-pill{display:inline-flex;align-items:center;gap:4px;font-family:'JetBrains Mono',monospace;font-weight:600;font-size:12px;padding:3px 9px;border-radius:99px;}
+  .delta-pill.better{background:var(--green-100);color:var(--green-700);}
+  .delta-pill.worse{background:var(--red-100);color:var(--red-600);}
+  .delta-pill.flat{background:#eef3f0;color:var(--ink-400);}
+  .delta-pill svg{width:11px;height:11px;}
+  #historyChart svg{display:block;width:100%;height:auto;}
+  #historyChart .grid-line{stroke:#e9f0eb;stroke-width:1;}
+  #historyChart .trend-line{fill:none;stroke:var(--green-600);stroke-width:2.5;stroke-linecap:round;stroke-linejoin:round;}
+  #historyChart .trend-area{fill:url(#trendFill);}
+  #historyChart .trend-dot{fill:var(--white);stroke:var(--green-600);stroke-width:2.5;}
+  #historyChart .axis-label{font-family:'Inter',sans-serif;font-size:10px;fill:var(--ink-400);}
+  #historyChart .value-label{font-family:'JetBrains Mono',monospace;font-size:10px;fill:var(--ink-600);font-weight:600;}
+  .edit-table input{
+    width:64px;border:1px solid var(--line);border-radius:6px;padding:6px 7px;font-size:12.5px;
+    font-family:'JetBrains Mono',monospace;color:var(--ink-900);background:var(--green-50);
+  }
+  .edit-table input:focus{outline:2px solid var(--green-500);outline-offset:1px;background:#fff;}
+  .edit-table input.loc-input{
+    width:130px;font-family:'Sora',sans-serif;font-weight:600;background:#fff;
+  }
+  .computed{color:var(--ink-600);font-family:'JetBrains Mono',monospace;font-size:12px;}
+  .rm-btn{
+    border:none;background:transparent;color:var(--ink-400);cursor:pointer;padding:4px;border-radius:6px;
+  }
+  .rm-btn:hover{color:var(--red-600);background:var(--red-100);}
+  .rm-btn svg{width:15px;height:15px;display:block;}
+  .add-row-btn{
+    margin-top:12px;border:1px dashed var(--line);background:transparent;color:var(--green-600);
+    font-family:'Sora',sans-serif;font-weight:600;font-size:12.5px;padding:9px 14px;border-radius:10px;
+    cursor:pointer;width:100%;transition:.2s;
+  }
+  .add-row-btn:hover{background:var(--green-50);border-color:var(--green-500);}
+  .add-row-btn.secondary{color:var(--amber-600);}
+  .add-row-btn.secondary:hover{background:var(--amber-100);border-color:var(--amber-600);}
+  .btn-row{display:flex;gap:10px;}
+  .btn-row .add-row-btn{margin-top:12px;}
+
+  /* ---- Vehicle breakdown ---- */
+  #vehiclePanel{margin-top:20px;}
+  .veh-total-cell{font-weight:700;color:var(--green-700);font-family:'JetBrains Mono',monospace;}
+  .edit-table input.model-name-input{
+    width:96px;font-family:'Sora',sans-serif;font-weight:600;background:#fff;margin-right:4px;
+  }
+  .rm-col-btn{
+    border:none;background:transparent;color:var(--ink-400);cursor:pointer;padding:3px;border-radius:6px;vertical-align:middle;
+  }
+  .rm-col-btn:hover{color:var(--red-600);background:var(--red-100);}
+  .rm-col-btn svg{width:13px;height:13px;display:block;}
+  th.veh-model-th{white-space:nowrap;}
+
+  .footer{margin-top:10px;display:flex;justify-content:space-between;align-items:center;font-size:11.5px;color:var(--ink-400);padding-top:16px;border-top:1px solid var(--line);animation:dropIn .6s .15s cubic-bezier(.2,.7,.2,1) both;}
+
+  @keyframes dropIn{from{opacity:0;transform:translateY(-8px);}to{opacity:1;transform:translateY(0);}}
+  @keyframes riseIn{from{opacity:0;transform:translateY(14px);}to{opacity:1;transform:translateY(0);}}
+  .kpi-card:nth-child(1){animation-delay:.02s;} .kpi-card:nth-child(2){animation-delay:.07s;}
+  .kpi-card:nth-child(3){animation-delay:.12s;} .kpi-card:nth-child(4){animation-delay:.17s;} .kpi-card:nth-child(5){animation-delay:.22s;}
+
+  body.hide-rc .rc-col{display:none !important;}
+
+  @media (max-width:980px){ .kpi-grid{grid-template-columns:repeat(2,1fr);} .panel-row{grid-template-columns:1fr;} }
+  @media (prefers-reduced-motion:reduce){ *{animation:none !important;transition:none !important;} }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="topbar">
+    <div class="brand">
+      <div class="brand-mark">
+        <svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 12l2 2 4-4"></path><circle cx="12" cy="12" r="9"></circle></svg>
+      </div>
+      <div class="brand-text">
+        <h1>Cognizant Compliance Status</h1>
+        <div class="sub"><span class="dot-live"></span> Driver Onboarding Compliance · WTi Mobility</div>
+      </div>
+    </div>
+    <div class="clock-block">
+      <div class="clock-date" id="clockDate">Thursday, 2 July 2026</div>
+      <div class="clock-time" id="clockTime">18:39<span class="secs">:01</span></div>
+    </div>
+  </div>
+
+  <div class="ctrl-row">
+    <div style="display:flex;gap:12px;flex-wrap:wrap;align-items:center;">
+      <div class="tab-group" id="viewTabs">
+        <button class="tab-btn active" data-view="dashboard">Dashboard</button>
+        <button class="tab-btn" data-view="edit">Edit Data</button>
+        <button class="tab-btn" data-view="history">History</button>
+      </div>
+      <div class="tab-group" id="coTabs">
+        <button class="tab-btn active" data-co="CTS">Cognizant CTS</button>
+        <button class="tab-btn" data-co="CVX">Cognizant CVX</button>
+      </div>
+    </div>
+    <div class="action-group">
+      <span class="save-status" id="saveStatus">Last saved: <b id="savedAt">not yet saved</b></span>
+      <button class="btn primary" id="saveBtn">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path><polyline points="17 21 17 13 7 13 7 21"></polyline><polyline points="7 3 7 8 15 8"></polyline></svg>
+        Save &amp; Download
+      </button>
+    </div>
+  </div>
+
+  <!-- ===================== DASHBOARD VIEW ===================== -->
+  <div id="dashboardPanel" style="display: block;">
+    <div class="kpi-grid" id="kpiGrid"><div class="kpi-card" style="--accent: var(--green-500);"><div class="kpi-label">Inducted Vehicles</div><div class="kpi-value"><span class="num">582</span></div><div class="kpi-foot ">Across 11 locations</div></div><div class="kpi-card" style="--accent: var(--green-600);"><div class="kpi-label">Total Drivers</div><div class="kpi-value"><span class="num">570</span></div><div class="kpi-foot ">526 DL uploaded</div></div><div class="kpi-card" style="--accent: var(--green-500);"><div class="kpi-label">DL Compliance</div><div class="kpi-value"><span class="num">92.3</span><span class="unit">%</span></div><div class="kpi-foot good">44 pending</div></div><div class="kpi-card" style="--accent: #b3791b;"><div class="kpi-label">IMEI Compliance</div><div class="kpi-value"><span class="num">57.9</span><span class="unit">%</span></div><div class="kpi-foot bad">240 pending</div></div><div class="kpi-card" style="--accent: var(--red-600);"><div class="kpi-label">Overall Compliance</div><div class="kpi-value"><span class="num">79.8</span><span class="unit">%</span></div><div class="kpi-foot bad">20.2% pending fleet-wide</div></div></div>
+
+    <div class="panel-row">
+      <div class="panel">
+        <div class="panel-head">
+          <div>
+            <div class="panel-title" id="tableTitle">Location-wise Compliance — Cognizant CTS</div>
+            <div class="panel-sub">Driving licence, IMEI &amp; RC document upload status by location</div>
+          </div>
+        </div>
+        <table>
+          <thead><tr><th>Location</th><th>Vehicles</th><th>Drivers</th><th>DL Pending</th><th>IMEI Pending</th><th>Overall Pending</th></tr></thead>
+          <tbody id="tableBody"><tr>
+      <td><span class="loc-cell"><span class="loc-dot"></span>Pune</span></td>
+      <td>43</td><td>38</td>
+      <td><div class="pbar-wrap"><div class="pbar-track"><div class="pbar-fill" data-pct="21.052631578947366" style="background: var(--amber-600); width: 21.0526%;"></div></div><div class="pbar-pct" style="color:var(--amber-600)">21.1%</div></div></td><td><div class="pbar-wrap"><div class="pbar-track"><div class="pbar-fill" data-pct="42.10526315789473" style="background: var(--red-600); width: 42.1053%;"></div></div><div class="pbar-pct" style="color:var(--red-600)">42.1%</div></div></td>
+      <td><span class="tag risk">35.8%</span></td></tr><tr>
+      <td><span class="loc-cell"><span class="loc-dot"></span>Tier-2/3</span></td>
+      <td>9</td><td>39</td>
+      <td><div class="pbar-wrap"><div class="pbar-track"><div class="pbar-fill" data-pct="20.51282051282051" style="background: var(--amber-600); width: 20.5128%;"></div></div><div class="pbar-pct" style="color:var(--amber-600)">20.5%</div></div></td><td><div class="pbar-wrap"><div class="pbar-track"><div class="pbar-fill" data-pct="82.05128205128204" style="background: var(--red-600); width: 82.0513%;"></div></div><div class="pbar-pct" style="color:var(--red-600)">82.1%</div></div></td>
+      <td><span class="tag risk">52.7%</span></td></tr><tr>
+      <td><span class="loc-cell"><span class="loc-dot"></span>Ahmedabad</span></td>
+      <td>117</td><td>9</td>
+      <td><div class="pbar-wrap"><div class="pbar-track"><div class="pbar-fill" data-pct="0" style="background: var(--green-600); width: 0%;"></div></div><div class="pbar-pct" style="color:var(--green-600)">0.0%</div></div></td><td><div class="pbar-wrap"><div class="pbar-track"><div class="pbar-fill" data-pct="88.88888888888889" style="background: var(--red-600); width: 88.8889%;"></div></div><div class="pbar-pct" style="color:var(--red-600)">88.9%</div></div></td>
+      <td><span class="tag warn">31.9%</span></td></tr><tr>
+      <td><span class="loc-cell"><span class="loc-dot"></span>Chennai</span></td>
+      <td>63</td><td>57</td>
+      <td><div class="pbar-wrap"><div class="pbar-track"><div class="pbar-fill" data-pct="8.771929824561402" style="background: var(--green-600); width: 8.77193%;"></div></div><div class="pbar-pct" style="color:var(--green-600)">8.8%</div></div></td><td><div class="pbar-wrap"><div class="pbar-track"><div class="pbar-fill" data-pct="52.63157894736842" style="background: var(--red-600); width: 52.6316%;"></div></div><div class="pbar-pct" style="color:var(--red-600)">52.6%</div></div></td>
+      <td><span class="tag warn">24.7%</span></td></tr><tr>
+      <td><span class="loc-cell"><span class="loc-dot"></span>Bangalore</span></td>
+      <td>56</td><td>109</td>
+      <td><div class="pbar-wrap"><div class="pbar-track"><div class="pbar-fill" data-pct="1.834862385321101" style="background: var(--green-600); width: 1.83486%;"></div></div><div class="pbar-pct" style="color:var(--green-600)">1.8%</div></div></td><td><div class="pbar-wrap"><div class="pbar-track"><div class="pbar-fill" data-pct="52.293577981651374" style="background: var(--red-600); width: 52.2936%;"></div></div><div class="pbar-pct" style="color:var(--red-600)">52.3%</div></div></td>
+      <td><span class="tag warn">21.0%</span></td></tr><tr>
+      <td><span class="loc-cell"><span class="loc-dot"></span>Hyderabad</span></td>
+      <td>79</td><td>65</td>
+      <td><div class="pbar-wrap"><div class="pbar-track"><div class="pbar-fill" data-pct="12.307692307692308" style="background: var(--green-600); width: 12.3077%;"></div></div><div class="pbar-pct" style="color:var(--green-600)">12.3%</div></div></td><td><div class="pbar-wrap"><div class="pbar-track"><div class="pbar-fill" data-pct="43.07692307692308" style="background: var(--red-600); width: 43.0769%;"></div></div><div class="pbar-pct" style="color:var(--red-600)">43.1%</div></div></td>
+      <td><span class="tag warn">23.1%</span></td></tr><tr>
+      <td><span class="loc-cell"><span class="loc-dot"></span>Mumbai</span></td>
+      <td>107</td><td>73</td>
+      <td><div class="pbar-wrap"><div class="pbar-track"><div class="pbar-fill" data-pct="13.698630136986301" style="background: var(--green-600); width: 13.6986%;"></div></div><div class="pbar-pct" style="color:var(--green-600)">13.7%</div></div></td><td><div class="pbar-wrap"><div class="pbar-track"><div class="pbar-fill" data-pct="45.20547945205479" style="background: var(--red-600); width: 45.2055%;"></div></div><div class="pbar-pct" style="color:var(--red-600)">45.2%</div></div></td>
+      <td><span class="tag warn">19.6%</span></td></tr><tr>
+      <td><span class="loc-cell"><span class="loc-dot"></span>Kolkata</span></td>
+      <td>37</td><td>43</td>
+      <td><div class="pbar-wrap"><div class="pbar-track"><div class="pbar-fill" data-pct="6.976744186046512" style="background: var(--green-600); width: 6.97674%;"></div></div><div class="pbar-pct" style="color:var(--green-600)">7.0%</div></div></td><td><div class="pbar-wrap"><div class="pbar-track"><div class="pbar-fill" data-pct="34.883720930232556" style="background: var(--amber-600); width: 34.8837%;"></div></div><div class="pbar-pct" style="color:var(--amber-600)">34.9%</div></div></td>
+      <td><span class="tag warn">18.5%</span></td></tr><tr>
+      <td><span class="loc-cell"><span class="loc-dot"></span>Gurugram</span></td>
+      <td>39</td><td>106</td>
+      <td><div class="pbar-wrap"><div class="pbar-track"><div class="pbar-fill" data-pct="0" style="background: var(--green-600); width: 0%;"></div></div><div class="pbar-pct" style="color:var(--green-600)">0.0%</div></div></td><td><div class="pbar-wrap"><div class="pbar-track"><div class="pbar-fill" data-pct="18.867924528301888" style="background: var(--amber-600); width: 18.8679%;"></div></div><div class="pbar-pct" style="color:var(--amber-600)">18.9%</div></div></td>
+      <td><span class="tag ok">7.1%</span></td></tr><tr>
+      <td><span class="loc-cell"><span class="loc-dot"></span>Noida</span></td>
+      <td>27</td><td>29</td>
+      <td><div class="pbar-wrap"><div class="pbar-track"><div class="pbar-fill" data-pct="0" style="background: var(--green-600); width: 0%;"></div></div><div class="pbar-pct" style="color:var(--green-600)">0.0%</div></div></td><td><div class="pbar-wrap"><div class="pbar-track"><div class="pbar-fill" data-pct="3.4482758620689653" style="background: var(--green-600); width: 3.44828%;"></div></div><div class="pbar-pct" style="color:var(--green-600)">3.4%</div></div></td>
+      <td><span class="tag ok">2.4%</span></td></tr><tr>
+      <td><span class="loc-cell"><span class="loc-dot"></span>In-Active</span></td>
+      <td>5</td><td>2</td>
+      <td><div class="pbar-wrap"><div class="pbar-track"><div class="pbar-fill" data-pct="0" style="background: var(--green-600); width: 0%;"></div></div><div class="pbar-pct" style="color:var(--green-600)">0.0%</div></div></td><td><div class="pbar-wrap"><div class="pbar-track"><div class="pbar-fill" data-pct="0" style="background: var(--green-600); width: 0%;"></div></div><div class="pbar-pct" style="color:var(--green-600)">0.0%</div></div></td>
+      <td><span class="tag ok">0.0%</span></td></tr><tr class="total-row"><td>Grand Total</td><td>582</td><td>570</td>
+    <td><div class="pbar-wrap"><div class="pbar-track"><div class="pbar-fill" data-pct="7.719298245614035" style="background: var(--green-600); width: 7.7193%;"></div></div><div class="pbar-pct" style="color:var(--green-600)">7.7%</div></div></td><td><div class="pbar-wrap"><div class="pbar-track"><div class="pbar-fill" data-pct="42.10526315789473" style="background: var(--red-600); width: 42.1053%;"></div></div><div class="pbar-pct" style="color:var(--red-600)">42.1%</div></div></td>
+    <td><span class="tag warn">20.2%</span></td></tr></tbody>
+        </table>
+      </div>
+      <div class="panel">
+        <div class="panel-head">
+          <div><div class="panel-title">Overall Pending % by Location</div><div class="panel-sub">Lower is better</div></div>
+        </div>
+        <div id="barChart"><div class="bar-row"><div class="bar-loc">Tier-2/3</div><div class="bar-track"><div class="bar-fill" data-pct="52.7065527065527" style="background: var(--red-600); width: 52.7066%;"></div></div><div class="bar-val">52.7%</div></div><div class="bar-row"><div class="bar-loc">Pune</div><div class="bar-track"><div class="bar-fill" data-pct="35.78131374949001" style="background: var(--red-600); width: 35.7813%;"></div></div><div class="bar-val">35.8%</div></div><div class="bar-row"><div class="bar-loc">Ahmedabad</div><div class="bar-track"><div class="bar-fill" data-pct="31.908831908831907" style="background: var(--amber-600); width: 31.9088%;"></div></div><div class="bar-val">31.9%</div></div><div class="bar-row"><div class="bar-loc">Chennai</div><div class="bar-track"><div class="bar-fill" data-pct="24.70064049011417" style="background: var(--amber-600); width: 24.7006%;"></div></div><div class="bar-val">24.7%</div></div><div class="bar-row"><div class="bar-loc">Hyderabad</div><div class="bar-track"><div class="bar-fill" data-pct="23.102888672508925" style="background: var(--amber-600); width: 23.1029%;"></div></div><div class="bar-val">23.1%</div></div><div class="bar-row"><div class="bar-loc">Bangalore</div><div class="bar-track"><div class="bar-fill" data-pct="21.01900393184797" style="background: var(--amber-600); width: 21.019%;"></div></div><div class="bar-val">21.0%</div></div><div class="bar-row"><div class="bar-loc">Mumbai</div><div class="bar-track"><div class="bar-fill" data-pct="19.63470319634703" style="background: var(--amber-600); width: 19.6347%;"></div></div><div class="bar-val">19.6%</div></div><div class="bar-row"><div class="bar-loc">Kolkata</div><div class="bar-track"><div class="bar-fill" data-pct="18.45799287659753" style="background: var(--amber-600); width: 18.458%;"></div></div><div class="bar-val">18.5%</div></div><div class="bar-row"><div class="bar-loc">Gurugram</div><div class="bar-track"><div class="bar-fill" data-pct="7.144009030801484" style="background: var(--green-600); width: 7.14401%;"></div></div><div class="bar-val">7.1%</div></div><div class="bar-row"><div class="bar-loc">Noida</div><div class="bar-track"><div class="bar-fill" data-pct="2.38399318859089" style="background: var(--green-600); width: 2.38399%;"></div></div><div class="bar-val">2.4%</div></div><div class="bar-row"><div class="bar-loc">In-Active</div><div class="bar-track"><div class="bar-fill" data-pct="0" style="background: var(--green-600); width: 0%;"></div></div><div class="bar-val">0.0%</div></div></div>
+      </div>
+    </div>
+
+    <div class="panel" id="masterPanel">
+      <div class="panel-head">
+        <div>
+          <div class="panel-title" id="masterTitle">Master Table — Cognizant CTS</div>
+          <div class="panel-sub">Full document upload data by location — vehicles, drivers, DL, IMEI &amp; RC status</div>
+        </div>
+      </div>
+      <table id="masterTable">
+        <thead>
+          <tr>
+            <th>Location</th><th>Vehicles</th><th>Drivers</th>
+            <th>DL Uploaded</th><th>DL Not Uploaded</th><th>DL Pending %</th>
+            <th>IMEI Uploaded</th><th>IMEI Not Uploaded</th><th>IMEI Pending %</th>
+            <th class="rc-col">RC Uploaded</th><th class="rc-col">RC Pending</th><th class="rc-col">RC Pending %</th>
+            <th>Overall Pending</th>
+          </tr>
+        </thead>
+        <tbody id="masterBody"><tr>
+      <td><span class="loc-cell"><span class="loc-dot"></span>Pune</span></td>
+      <td class="num-cell">43</td>
+      <td class="num-cell">38</td>
+      <td class="num-cell">30</td>
+      <td class="num-cell">8</td>
+      <td><span class="pct-text" style="color:var(--amber-600)">21.1%</span></td>
+      <td class="num-cell">22</td>
+      <td class="num-cell">16</td>
+      <td><span class="pct-text" style="color:var(--red-600)">42.1%</span></td>
+      <td class="num-cell">24</td>
+      <td class="num-cell">19</td>
+      <td><span class="pct-text" style="color:var(--red-600)">44.2%</span></td>
+      <td><span class="pct-text" style="color:var(--red-600)">35.8%</span></td></tr><tr>
+      <td><span class="loc-cell"><span class="loc-dot"></span>Tier-2/3</span></td>
+      <td class="num-cell">9</td>
+      <td class="num-cell">39</td>
+      <td class="num-cell">31</td>
+      <td class="num-cell">8</td>
+      <td><span class="pct-text" style="color:var(--amber-600)">20.5%</span></td>
+      <td class="num-cell">7</td>
+      <td class="num-cell">32</td>
+      <td><span class="pct-text" style="color:var(--red-600)">82.1%</span></td>
+      <td class="num-cell">4</td>
+      <td class="num-cell">5</td>
+      <td><span class="pct-text" style="color:var(--red-600)">55.6%</span></td>
+      <td><span class="pct-text" style="color:var(--red-600)">52.7%</span></td></tr><tr>
+      <td><span class="loc-cell"><span class="loc-dot"></span>Ahmedabad</span></td>
+      <td class="num-cell">117</td>
+      <td class="num-cell">9</td>
+      <td class="num-cell">9</td>
+      <td class="num-cell">0</td>
+      <td><span class="pct-text" style="color:var(--green-600)">0.0%</span></td>
+      <td class="num-cell">1</td>
+      <td class="num-cell">8</td>
+      <td><span class="pct-text" style="color:var(--red-600)">88.9%</span></td>
+      <td class="num-cell">109</td>
+      <td class="num-cell">8</td>
+      <td><span class="pct-text" style="color:var(--green-600)">6.8%</span></td>
+      <td><span class="pct-text" style="color:var(--amber-600)">31.9%</span></td></tr><tr>
+      <td><span class="loc-cell"><span class="loc-dot"></span>Chennai</span></td>
+      <td class="num-cell">63</td>
+      <td class="num-cell">57</td>
+      <td class="num-cell">52</td>
+      <td class="num-cell">5</td>
+      <td><span class="pct-text" style="color:var(--green-600)">8.8%</span></td>
+      <td class="num-cell">27</td>
+      <td class="num-cell">30</td>
+      <td><span class="pct-text" style="color:var(--red-600)">52.6%</span></td>
+      <td class="num-cell">55</td>
+      <td class="num-cell">8</td>
+      <td><span class="pct-text" style="color:var(--green-600)">12.7%</span></td>
+      <td><span class="pct-text" style="color:var(--amber-600)">24.7%</span></td></tr><tr>
+      <td><span class="loc-cell"><span class="loc-dot"></span>Bangalore</span></td>
+      <td class="num-cell">56</td>
+      <td class="num-cell">109</td>
+      <td class="num-cell">107</td>
+      <td class="num-cell">2</td>
+      <td><span class="pct-text" style="color:var(--green-600)">1.8%</span></td>
+      <td class="num-cell">52</td>
+      <td class="num-cell">57</td>
+      <td><span class="pct-text" style="color:var(--red-600)">52.3%</span></td>
+      <td class="num-cell">51</td>
+      <td class="num-cell">5</td>
+      <td><span class="pct-text" style="color:var(--green-600)">8.9%</span></td>
+      <td><span class="pct-text" style="color:var(--amber-600)">21.0%</span></td></tr><tr>
+      <td><span class="loc-cell"><span class="loc-dot"></span>Hyderabad</span></td>
+      <td class="num-cell">79</td>
+      <td class="num-cell">65</td>
+      <td class="num-cell">57</td>
+      <td class="num-cell">8</td>
+      <td><span class="pct-text" style="color:var(--green-600)">12.3%</span></td>
+      <td class="num-cell">37</td>
+      <td class="num-cell">28</td>
+      <td><span class="pct-text" style="color:var(--red-600)">43.1%</span></td>
+      <td class="num-cell">68</td>
+      <td class="num-cell">11</td>
+      <td><span class="pct-text" style="color:var(--green-600)">13.9%</span></td>
+      <td><span class="pct-text" style="color:var(--amber-600)">23.1%</span></td></tr><tr>
+      <td><span class="loc-cell"><span class="loc-dot"></span>Mumbai</span></td>
+      <td class="num-cell">107</td>
+      <td class="num-cell">73</td>
+      <td class="num-cell">63</td>
+      <td class="num-cell">10</td>
+      <td><span class="pct-text" style="color:var(--green-600)">13.7%</span></td>
+      <td class="num-cell">40</td>
+      <td class="num-cell">33</td>
+      <td><span class="pct-text" style="color:var(--red-600)">45.2%</span></td>
+      <td class="num-cell">107</td>
+      <td class="num-cell">0</td>
+      <td><span class="pct-text" style="color:var(--green-600)">0.0%</span></td>
+      <td><span class="pct-text" style="color:var(--amber-600)">19.6%</span></td></tr><tr>
+      <td><span class="loc-cell"><span class="loc-dot"></span>Kolkata</span></td>
+      <td class="num-cell">37</td>
+      <td class="num-cell">43</td>
+      <td class="num-cell">40</td>
+      <td class="num-cell">3</td>
+      <td><span class="pct-text" style="color:var(--green-600)">7.0%</span></td>
+      <td class="num-cell">28</td>
+      <td class="num-cell">15</td>
+      <td><span class="pct-text" style="color:var(--amber-600)">34.9%</span></td>
+      <td class="num-cell">32</td>
+      <td class="num-cell">5</td>
+      <td><span class="pct-text" style="color:var(--green-600)">13.5%</span></td>
+      <td><span class="pct-text" style="color:var(--amber-600)">18.5%</span></td></tr><tr>
+      <td><span class="loc-cell"><span class="loc-dot"></span>Gurugram</span></td>
+      <td class="num-cell">39</td>
+      <td class="num-cell">106</td>
+      <td class="num-cell">106</td>
+      <td class="num-cell">0</td>
+      <td><span class="pct-text" style="color:var(--green-600)">0.0%</span></td>
+      <td class="num-cell">86</td>
+      <td class="num-cell">20</td>
+      <td><span class="pct-text" style="color:var(--amber-600)">18.9%</span></td>
+      <td class="num-cell">38</td>
+      <td class="num-cell">1</td>
+      <td><span class="pct-text" style="color:var(--green-600)">2.6%</span></td>
+      <td><span class="pct-text" style="color:var(--green-600)">7.1%</span></td></tr><tr>
+      <td><span class="loc-cell"><span class="loc-dot"></span>Noida</span></td>
+      <td class="num-cell">27</td>
+      <td class="num-cell">29</td>
+      <td class="num-cell">29</td>
+      <td class="num-cell">0</td>
+      <td><span class="pct-text" style="color:var(--green-600)">0.0%</span></td>
+      <td class="num-cell">28</td>
+      <td class="num-cell">1</td>
+      <td><span class="pct-text" style="color:var(--green-600)">3.4%</span></td>
+      <td class="num-cell">26</td>
+      <td class="num-cell">1</td>
+      <td><span class="pct-text" style="color:var(--green-600)">3.7%</span></td>
+      <td><span class="pct-text" style="color:var(--green-600)">2.4%</span></td></tr><tr>
+      <td><span class="loc-cell"><span class="loc-dot"></span>In-Active</span></td>
+      <td class="num-cell">5</td>
+      <td class="num-cell">2</td>
+      <td class="num-cell">2</td>
+      <td class="num-cell">0</td>
+      <td><span class="pct-text" style="color:var(--green-600)">0.0%</span></td>
+      <td class="num-cell">2</td>
+      <td class="num-cell">0</td>
+      <td><span class="pct-text" style="color:var(--green-600)">0.0%</span></td>
+      <td class="num-cell">5</td>
+      <td class="num-cell">0</td>
+      <td><span class="pct-text" style="color:var(--green-600)">0.0%</span></td>
+      <td><span class="pct-text" style="color:var(--green-600)">0.0%</span></td></tr><tr class="total-row">
+    <td>Grand Total</td>
+    <td class="num-cell">582</td>
+    <td class="num-cell">570</td>
+    <td class="num-cell">526</td>
+    <td class="num-cell">44</td>
+    <td><span class="pct-text" style="color:var(--green-600)">7.7%</span></td>
+    <td class="num-cell">330</td>
+    <td class="num-cell">240</td>
+    <td><span class="pct-text" style="color:var(--red-600)">42.1%</span></td>
+    <td class="num-cell">519</td>
+    <td class="num-cell">63</td>
+    <td><span class="pct-text" style="color:var(--green-600)">10.8%</span></td>
+    <td><span class="pct-text" style="color:var(--amber-600)">20.2%</span></td></tr></tbody>
+      </table>
+    </div>
+
+    <div class="panel" id="inactivePanel">
+      <div class="panel-head">
+        <div>
+          <div class="panel-title" id="inactiveTitle">Inactive — Cognizant CTS</div>
+          <div class="panel-sub">Vehicles &amp; drivers currently inactive — excluded from all compliance % calculations</div>
+        </div>
+      </div>
+      <table id="inactiveTable">
+        <thead><tr><th>Location</th><th>Vehicles</th><th>Drivers</th></tr></thead>
+        <tbody id="inactiveBody"></tbody>
+      </table>
+    </div>
+
+    <div class="panel" id="vehiclePanel" style="display: block;">
+      <div class="panel-head">
+        <div>
+          <div class="panel-title">Vehicle Type Breakdown — Cognizant CVX</div>
+          <div class="panel-sub">Inducted vehicles split by model per location — entered manually in Edit Data</div>
+        </div>
+      </div>
+      <table id="vehicleTable">
+        <thead><tr id="vehicleHead"><th>Location</th><th>CRYSTA</th><th>MARUTI INVICTO</th><th>SUV</th><th>HYCROSS</th><th>Grand Total</th></tr></thead>
+        <tbody id="vehicleBody"><tr><td><span class="loc-cell"><span class="loc-dot"></span>Bangalore</span></td>
+      <td class="num-cell">3</td><td class="num-cell">0</td><td class="num-cell">0</td><td class="num-cell">14</td>
+      <td class="veh-total-cell">17</td></tr><tr><td><span class="loc-cell"><span class="loc-dot"></span>Chennai</span></td>
+      <td class="num-cell">12</td><td class="num-cell">0</td><td class="num-cell">1</td><td class="num-cell">5</td>
+      <td class="veh-total-cell">18</td></tr><tr><td><span class="loc-cell"><span class="loc-dot"></span>Delhi</span></td>
+      <td class="num-cell">16</td><td class="num-cell">5</td><td class="num-cell">0</td><td class="num-cell">9</td>
+      <td class="veh-total-cell">30</td></tr><tr><td><span class="loc-cell"><span class="loc-dot"></span>Hyderabad</span></td>
+      <td class="num-cell">14</td><td class="num-cell">3</td><td class="num-cell">0</td><td class="num-cell">2</td>
+      <td class="veh-total-cell">19</td></tr><tr><td><span class="loc-cell"><span class="loc-dot"></span>Kolkata</span></td>
+      <td class="num-cell">7</td><td class="num-cell">0</td><td class="num-cell">0</td><td class="num-cell">3</td>
+      <td class="veh-total-cell">10</td></tr><tr><td><span class="loc-cell"><span class="loc-dot"></span>Noida</span></td>
+      <td class="num-cell">5</td><td class="num-cell">1</td><td class="num-cell">0</td><td class="num-cell">4</td>
+      <td class="veh-total-cell">10</td></tr><tr><td><span class="loc-cell"><span class="loc-dot"></span>Pune</span></td>
+      <td class="num-cell">7</td><td class="num-cell">0</td><td class="num-cell">0</td><td class="num-cell">3</td>
+      <td class="veh-total-cell">10</td></tr><tr><td><span class="loc-cell"><span class="loc-dot"></span>Mumbai</span></td>
+      <td class="num-cell">0</td><td class="num-cell">0</td><td class="num-cell">0</td><td class="num-cell">0</td>
+      <td class="veh-total-cell">0</td></tr><tr class="total-row"><td>Grand Total</td>
+    <td class="num-cell">64</td><td class="num-cell">9</td><td class="num-cell">1</td><td class="num-cell">40</td>
+    <td class="veh-total-cell">114</td></tr></tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- ===================== EDIT VIEW ===================== -->
+  <div id="editPanel" style="display: none;">
+    <div class="panel">
+      <div class="panel-head">
+        <div>
+          <div class="panel-title" id="editTitle">Edit Data — Cognizant CTS</div>
+          <div class="panel-sub">Fill in Vehicles, Drivers, DL/IMEI Uploaded &amp; RC Pending — percentages calculate automatically</div>
+        </div>
+      </div>
+      <table class="edit-table">
+        <thead>
+          <tr>
+            <th>Location</th><th>Vehicles</th><th>Drivers</th>
+            <th>DL Uploaded</th><th>DL Pend.%</th>
+            <th>IMEI Uploaded</th><th>IMEI Pend.%</th>
+            <th class="rc-col">RC Pending</th><th class="rc-col">RC Pend.%</th>
+            <th>Overall</th><th></th>
+          </tr>
+        </thead>
+        <tbody id="editBody"><tr>
+      <td><input class="loc-input" data-idx="0" data-field="location" value="Pune"></td>
+      <td><input type="number" min="0" data-idx="0" data-field="vehicles" value="43"></td>
+      <td><input type="number" min="0" data-idx="0" data-field="drivers" value="38"></td>
+      <td><input type="number" min="0" data-idx="0" data-field="dlUp" value="30"></td>
+      <td class="computed">21.1%</td>
+      <td><input type="number" min="0" data-idx="0" data-field="imeiUp" value="22"></td>
+      <td class="computed">42.1%</td>
+      <td><input type="number" min="0" data-idx="0" data-field="rcPending" value="19"></td>
+      <td class="computed">44.2%</td>
+      <td class="computed" style="font-weight:700;color:var(--red-600)">35.8%</td>
+      <td><button class="rm-btn" data-idx="0" title="Remove location"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg></button></td></tr><tr>
+      <td><input class="loc-input" data-idx="1" data-field="location" value="Tier-2/3"></td>
+      <td><input type="number" min="0" data-idx="1" data-field="vehicles" value="9"></td>
+      <td><input type="number" min="0" data-idx="1" data-field="drivers" value="39"></td>
+      <td><input type="number" min="0" data-idx="1" data-field="dlUp" value="31"></td>
+      <td class="computed">20.5%</td>
+      <td><input type="number" min="0" data-idx="1" data-field="imeiUp" value="7"></td>
+      <td class="computed">82.1%</td>
+      <td><input type="number" min="0" data-idx="1" data-field="rcPending" value="5"></td>
+      <td class="computed">55.6%</td>
+      <td class="computed" style="font-weight:700;color:var(--red-600)">52.7%</td>
+      <td><button class="rm-btn" data-idx="1" title="Remove location"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg></button></td></tr><tr>
+      <td><input class="loc-input" data-idx="2" data-field="location" value="Ahmedabad"></td>
+      <td><input type="number" min="0" data-idx="2" data-field="vehicles" value="117"></td>
+      <td><input type="number" min="0" data-idx="2" data-field="drivers" value="9"></td>
+      <td><input type="number" min="0" data-idx="2" data-field="dlUp" value="9"></td>
+      <td class="computed">0.0%</td>
+      <td><input type="number" min="0" data-idx="2" data-field="imeiUp" value="1"></td>
+      <td class="computed">88.9%</td>
+      <td><input type="number" min="0" data-idx="2" data-field="rcPending" value="8"></td>
+      <td class="computed">6.8%</td>
+      <td class="computed" style="font-weight:700;color:var(--amber-600)">31.9%</td>
+      <td><button class="rm-btn" data-idx="2" title="Remove location"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg></button></td></tr><tr>
+      <td><input class="loc-input" data-idx="3" data-field="location" value="Chennai"></td>
+      <td><input type="number" min="0" data-idx="3" data-field="vehicles" value="63"></td>
+      <td><input type="number" min="0" data-idx="3" data-field="drivers" value="57"></td>
+      <td><input type="number" min="0" data-idx="3" data-field="dlUp" value="52"></td>
+      <td class="computed">8.8%</td>
+      <td><input type="number" min="0" data-idx="3" data-field="imeiUp" value="27"></td>
+      <td class="computed">52.6%</td>
+      <td><input type="number" min="0" data-idx="3" data-field="rcPending" value="8"></td>
+      <td class="computed">12.7%</td>
+      <td class="computed" style="font-weight:700;color:var(--amber-600)">24.7%</td>
+      <td><button class="rm-btn" data-idx="3" title="Remove location"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg></button></td></tr><tr>
+      <td><input class="loc-input" data-idx="4" data-field="location" value="Bangalore"></td>
+      <td><input type="number" min="0" data-idx="4" data-field="vehicles" value="56"></td>
+      <td><input type="number" min="0" data-idx="4" data-field="drivers" value="109"></td>
+      <td><input type="number" min="0" data-idx="4" data-field="dlUp" value="107"></td>
+      <td class="computed">1.8%</td>
+      <td><input type="number" min="0" data-idx="4" data-field="imeiUp" value="52"></td>
+      <td class="computed">52.3%</td>
+      <td><input type="number" min="0" data-idx="4" data-field="rcPending" value="5"></td>
+      <td class="computed">8.9%</td>
+      <td class="computed" style="font-weight:700;color:var(--amber-600)">21.0%</td>
+      <td><button class="rm-btn" data-idx="4" title="Remove location"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg></button></td></tr><tr>
+      <td><input class="loc-input" data-idx="5" data-field="location" value="Hyderabad"></td>
+      <td><input type="number" min="0" data-idx="5" data-field="vehicles" value="79"></td>
+      <td><input type="number" min="0" data-idx="5" data-field="drivers" value="65"></td>
+      <td><input type="number" min="0" data-idx="5" data-field="dlUp" value="57"></td>
+      <td class="computed">12.3%</td>
+      <td><input type="number" min="0" data-idx="5" data-field="imeiUp" value="37"></td>
+      <td class="computed">43.1%</td>
+      <td><input type="number" min="0" data-idx="5" data-field="rcPending" value="11"></td>
+      <td class="computed">13.9%</td>
+      <td class="computed" style="font-weight:700;color:var(--amber-600)">23.1%</td>
+      <td><button class="rm-btn" data-idx="5" title="Remove location"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg></button></td></tr><tr>
+      <td><input class="loc-input" data-idx="6" data-field="location" value="Mumbai"></td>
+      <td><input type="number" min="0" data-idx="6" data-field="vehicles" value="107"></td>
+      <td><input type="number" min="0" data-idx="6" data-field="drivers" value="73"></td>
+      <td><input type="number" min="0" data-idx="6" data-field="dlUp" value="63"></td>
+      <td class="computed">13.7%</td>
+      <td><input type="number" min="0" data-idx="6" data-field="imeiUp" value="40"></td>
+      <td class="computed">45.2%</td>
+      <td><input type="number" min="0" data-idx="6" data-field="rcPending" value="0"></td>
+      <td class="computed">0.0%</td>
+      <td class="computed" style="font-weight:700;color:var(--amber-600)">19.6%</td>
+      <td><button class="rm-btn" data-idx="6" title="Remove location"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg></button></td></tr><tr>
+      <td><input class="loc-input" data-idx="7" data-field="location" value="Kolkata"></td>
+      <td><input type="number" min="0" data-idx="7" data-field="vehicles" value="37"></td>
+      <td><input type="number" min="0" data-idx="7" data-field="drivers" value="43"></td>
+      <td><input type="number" min="0" data-idx="7" data-field="dlUp" value="40"></td>
+      <td class="computed">7.0%</td>
+      <td><input type="number" min="0" data-idx="7" data-field="imeiUp" value="28"></td>
+      <td class="computed">34.9%</td>
+      <td><input type="number" min="0" data-idx="7" data-field="rcPending" value="5"></td>
+      <td class="computed">13.5%</td>
+      <td class="computed" style="font-weight:700;color:var(--amber-600)">18.5%</td>
+      <td><button class="rm-btn" data-idx="7" title="Remove location"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg></button></td></tr><tr>
+      <td><input class="loc-input" data-idx="8" data-field="location" value="Gurugram"></td>
+      <td><input type="number" min="0" data-idx="8" data-field="vehicles" value="39"></td>
+      <td><input type="number" min="0" data-idx="8" data-field="drivers" value="106"></td>
+      <td><input type="number" min="0" data-idx="8" data-field="dlUp" value="106"></td>
+      <td class="computed">0.0%</td>
+      <td><input type="number" min="0" data-idx="8" data-field="imeiUp" value="86"></td>
+      <td class="computed">18.9%</td>
+      <td><input type="number" min="0" data-idx="8" data-field="rcPending" value="1"></td>
+      <td class="computed">2.6%</td>
+      <td class="computed" style="font-weight:700;color:var(--green-600)">7.1%</td>
+      <td><button class="rm-btn" data-idx="8" title="Remove location"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg></button></td></tr><tr>
+      <td><input class="loc-input" data-idx="9" data-field="location" value="Noida"></td>
+      <td><input type="number" min="0" data-idx="9" data-field="vehicles" value="27"></td>
+      <td><input type="number" min="0" data-idx="9" data-field="drivers" value="29"></td>
+      <td><input type="number" min="0" data-idx="9" data-field="dlUp" value="29"></td>
+      <td class="computed">0.0%</td>
+      <td><input type="number" min="0" data-idx="9" data-field="imeiUp" value="28"></td>
+      <td class="computed">3.4%</td>
+      <td><input type="number" min="0" data-idx="9" data-field="rcPending" value="1"></td>
+      <td class="computed">3.7%</td>
+      <td class="computed" style="font-weight:700;color:var(--green-600)">2.4%</td>
+      <td><button class="rm-btn" data-idx="9" title="Remove location"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg></button></td></tr><tr>
+      <td><input class="loc-input" data-idx="10" data-field="location" value="In-Active"></td>
+      <td><input type="number" min="0" data-idx="10" data-field="vehicles" value="5"></td>
+      <td><input type="number" min="0" data-idx="10" data-field="drivers" value="2"></td>
+      <td><input type="number" min="0" data-idx="10" data-field="dlUp" value="2"></td>
+      <td class="computed">0.0%</td>
+      <td><input type="number" min="0" data-idx="10" data-field="imeiUp" value="2"></td>
+      <td class="computed">0.0%</td>
+      <td><input type="number" min="0" data-idx="10" data-field="rcPending" value="0"></td>
+      <td class="computed">0.0%</td>
+      <td class="computed" style="font-weight:700;color:var(--green-600)">0.0%</td>
+      <td><button class="rm-btn" data-idx="10" title="Remove location"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg></button></td></tr><tr class="total-row"><td>Grand Total</td><td>582</td><td>570</td>
+    <td>526</td><td class="computed">7.7%</td>
+    <td>330</td><td class="computed">42.1%</td>
+    <td>63</td><td class="computed">10.8%</td>
+    <td class="computed" style="font-weight:700">20.2%</td><td></td></tr></tbody>
+      </table>
+      <button class="add-row-btn" id="addRowBtn">+ Add location</button>
+    </div>
+
+    <div class="panel" id="vehicleEditPanel" style="margin-top: 20px; display: block;">
+      <div class="panel-head">
+        <div>
+          <div class="panel-title">Vehicle Type Breakdown — Manual Entry (Cognizant CVX)</div>
+          <div class="panel-sub">Add locations and vehicle models, then fill in counts — Grand Total calculates automatically</div>
+        </div>
+      </div>
+      <table class="edit-table" id="vehicleEditTable">
+        <thead><tr id="vehicleEditHead"><th>Location</th>
+    <th class="veh-model-th">
+      <input class="model-name-input" data-model-idx="0" value="CRYSTA">
+      <button class="rm-col-btn" data-model-idx="0" title="Remove model">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+      </button>
+    </th>
+    <th class="veh-model-th">
+      <input class="model-name-input" data-model-idx="1" value="MARUTI INVICTO">
+      <button class="rm-col-btn" data-model-idx="1" title="Remove model">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+      </button>
+    </th>
+    <th class="veh-model-th">
+      <input class="model-name-input" data-model-idx="2" value="SUV">
+      <button class="rm-col-btn" data-model-idx="2" title="Remove model">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+      </button>
+    </th>
+    <th class="veh-model-th">
+      <input class="model-name-input" data-model-idx="3" value="HYCROSS">
+      <button class="rm-col-btn" data-model-idx="3" title="Remove model">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+      </button>
+    </th><th>Grand Total</th><th></th></tr></thead>
+        <tbody id="vehicleEditBody"><tr><td><input class="loc-input" data-veh-idx="0" data-veh-field="location" value="Bangalore"></td>
+      <td><input type="number" min="0" data-veh-idx="0" data-veh-model="CRYSTA" value="3"></td><td><input type="number" min="0" data-veh-idx="0" data-veh-model="MARUTI INVICTO" value="0"></td><td><input type="number" min="0" data-veh-idx="0" data-veh-model="SUV" value="0"></td><td><input type="number" min="0" data-veh-idx="0" data-veh-model="HYCROSS" value="14"></td>
+      <td class="computed veh-row-total" style="font-weight:700;color:var(--green-700)">17</td>
+      <td><button class="rm-btn rm-veh-btn" data-veh-idx="0" title="Remove location"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg></button></td></tr><tr><td><input class="loc-input" data-veh-idx="1" data-veh-field="location" value="Chennai"></td>
+      <td><input type="number" min="0" data-veh-idx="1" data-veh-model="CRYSTA" value="12"></td><td><input type="number" min="0" data-veh-idx="1" data-veh-model="MARUTI INVICTO" value="0"></td><td><input type="number" min="0" data-veh-idx="1" data-veh-model="SUV" value="1"></td><td><input type="number" min="0" data-veh-idx="1" data-veh-model="HYCROSS" value="5"></td>
+      <td class="computed veh-row-total" style="font-weight:700;color:var(--green-700)">18</td>
+      <td><button class="rm-btn rm-veh-btn" data-veh-idx="1" title="Remove location"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg></button></td></tr><tr><td><input class="loc-input" data-veh-idx="2" data-veh-field="location" value="Delhi"></td>
+      <td><input type="number" min="0" data-veh-idx="2" data-veh-model="CRYSTA" value="16"></td><td><input type="number" min="0" data-veh-idx="2" data-veh-model="MARUTI INVICTO" value="5"></td><td><input type="number" min="0" data-veh-idx="2" data-veh-model="SUV" value="0"></td><td><input type="number" min="0" data-veh-idx="2" data-veh-model="HYCROSS" value="9"></td>
+      <td class="computed veh-row-total" style="font-weight:700;color:var(--green-700)">30</td>
+      <td><button class="rm-btn rm-veh-btn" data-veh-idx="2" title="Remove location"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg></button></td></tr><tr><td><input class="loc-input" data-veh-idx="3" data-veh-field="location" value="Hyderabad"></td>
+      <td><input type="number" min="0" data-veh-idx="3" data-veh-model="CRYSTA" value="14"></td><td><input type="number" min="0" data-veh-idx="3" data-veh-model="MARUTI INVICTO" value="3"></td><td><input type="number" min="0" data-veh-idx="3" data-veh-model="SUV" value="0"></td><td><input type="number" min="0" data-veh-idx="3" data-veh-model="HYCROSS" value="2"></td>
+      <td class="computed veh-row-total" style="font-weight:700;color:var(--green-700)">19</td>
+      <td><button class="rm-btn rm-veh-btn" data-veh-idx="3" title="Remove location"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg></button></td></tr><tr><td><input class="loc-input" data-veh-idx="4" data-veh-field="location" value="Kolkata"></td>
+      <td><input type="number" min="0" data-veh-idx="4" data-veh-model="CRYSTA" value="7"></td><td><input type="number" min="0" data-veh-idx="4" data-veh-model="MARUTI INVICTO" value="0"></td><td><input type="number" min="0" data-veh-idx="4" data-veh-model="SUV" value="0"></td><td><input type="number" min="0" data-veh-idx="4" data-veh-model="HYCROSS" value="3"></td>
+      <td class="computed veh-row-total" style="font-weight:700;color:var(--green-700)">10</td>
+      <td><button class="rm-btn rm-veh-btn" data-veh-idx="4" title="Remove location"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg></button></td></tr><tr><td><input class="loc-input" data-veh-idx="5" data-veh-field="location" value="Noida"></td>
+      <td><input type="number" min="0" data-veh-idx="5" data-veh-model="CRYSTA" value="5"></td><td><input type="number" min="0" data-veh-idx="5" data-veh-model="MARUTI INVICTO" value="1"></td><td><input type="number" min="0" data-veh-idx="5" data-veh-model="SUV" value="0"></td><td><input type="number" min="0" data-veh-idx="5" data-veh-model="HYCROSS" value="4"></td>
+      <td class="computed veh-row-total" style="font-weight:700;color:var(--green-700)">10</td>
+      <td><button class="rm-btn rm-veh-btn" data-veh-idx="5" title="Remove location"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg></button></td></tr><tr><td><input class="loc-input" data-veh-idx="6" data-veh-field="location" value="Pune"></td>
+      <td><input type="number" min="0" data-veh-idx="6" data-veh-model="CRYSTA" value="7"></td><td><input type="number" min="0" data-veh-idx="6" data-veh-model="MARUTI INVICTO" value="0"></td><td><input type="number" min="0" data-veh-idx="6" data-veh-model="SUV" value="0"></td><td><input type="number" min="0" data-veh-idx="6" data-veh-model="HYCROSS" value="3"></td>
+      <td class="computed veh-row-total" style="font-weight:700;color:var(--green-700)">10</td>
+      <td><button class="rm-btn rm-veh-btn" data-veh-idx="6" title="Remove location"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg></button></td></tr><tr><td><input class="loc-input" data-veh-idx="7" data-veh-field="location" value="Mumbai"></td>
+      <td><input type="number" min="0" data-veh-idx="7" data-veh-model="CRYSTA" value="0"></td><td><input type="number" min="0" data-veh-idx="7" data-veh-model="MARUTI INVICTO" value="0"></td><td><input type="number" min="0" data-veh-idx="7" data-veh-model="SUV" value="0"></td><td><input type="number" min="0" data-veh-idx="7" data-veh-model="HYCROSS" value="0"></td>
+      <td class="computed veh-row-total" style="font-weight:700;color:var(--green-700)">0</td>
+      <td><button class="rm-btn rm-veh-btn" data-veh-idx="7" title="Remove location"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg></button></td></tr><tr class="total-row"><td>Grand Total</td>
+    <td class="computed">64</td><td class="computed">9</td><td class="computed">1</td><td class="computed">40</td>
+    <td class="computed" style="font-weight:700">114</td><td></td></tr></tbody>
+      </table>
+      <div class="btn-row">
+        <button class="add-row-btn" id="addVehicleRowBtn">+ Add location</button>
+        <button class="add-row-btn secondary" id="addVehicleModelBtn">+ Add vehicle model</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===================== HISTORY VIEW ===================== -->
+  <div id="historyPanel" style="display: none;">
+    <div id="historyEmpty" class="panel" style="text-align:center;padding:44px 20px;">
+      <div style="font-family:'Sora',sans-serif;font-weight:700;font-size:15px;margin-bottom:6px;">No history logged yet</div>
+      <div style="font-size:12.8px;color:var(--ink-600);max-width:440px;margin:0 auto;">
+        Every time you click <b>Save &amp; Download</b>, today's totals are logged here automatically.
+        Tomorrow, open the file you downloaded today, update the numbers, and save again — the trend builds up day by day inside the file.
+      </div>
+    </div>
+
+    <div id="historyContent" style="display:none;">
+      <div class="kpi-grid" id="historySummary" style="grid-template-columns:repeat(4,1fr);"></div>
+
+      <div class="panel-row" style="grid-template-columns:1fr;">
+        <div class="panel">
+          <div class="panel-head">
+            <div>
+              <div class="panel-title" id="historyChartTitle">Overall Pending % Trend</div>
+              <div class="panel-sub">Lower is better — one point per day saved</div>
+            </div>
+          </div>
+          <div id="historyChart"></div>
+        </div>
+      </div>
+
+      <div class="panel">
+        <div class="panel-head">
+          <div>
+            <div class="panel-title" id="historyTableTitle">Day-by-Day Comparison</div>
+            <div class="panel-sub">Change vs the previous logged day</div>
+          </div>
+        </div>
+        <table>
+          <thead>
+            <tr><th>Date</th><th>Vehicles</th><th>Drivers</th><th>DL Pending</th><th>IMEI Pending</th><th>Overall Pending</th><th>Change vs Prev. Day</th></tr>
+          </thead>
+          <tbody id="historyBody"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <div class="footer">
+    <span>Fill in the Edit Data tab, then click <b>Save &amp; Download</b> — the file you download has your numbers baked in, so anyone who opens it sees this exact status.</span>
+    <span id="footNote">Editing locally</span>
+  </div>
+
+</div>
+
+<script id="embedded-data" type="application/json">{
+  "savedAt": "2026-07-02T13:09:02.572Z",
+  "history": [
+    {
+      "date": "2026-07-02",
+      "savedAt": "2026-07-02T13:09:02.571Z",
+      "CTS": {
+        "location": "Grand Total",
+        "vehicles": 583,
+        "drivers": 570,
+        "dlUp": 524,
+        "imeiUp": 329,
+        "rcPending": 72,
+        "dlNot": 43,
+        "imeiNot": 238,
+        "dlPct": 0.07543859649122807,
+        "imeiPct": 0.41754385964912283,
+        "rcPct": 0.14201183431952663,
+        "overallPct": 0.21166476348662586
+      },
+      "CVX": {
+        "location": "Grand Total",
+        "vehicles": 161,
+        "drivers": 165,
+        "dlUp": 154,
+        "imeiUp": 89,
+        "rcPending": 0,
+        "dlNot": 11,
+        "imeiNot": 76,
+        "dlPct": 0.06666666666666667,
+        "imeiPct": 0.46060606060606063,
+        "rcPct": 0,
+        "overallPct": 0.26363636363636367
+      }
+    }
+  ],
+  "CTS": [
+    {
+      "location": "Pune",
+      "vehicles": 37,
+      "drivers": 38,
+      "dlUp": 30,
+      "imeiUp": 22,
+      "rcPending": 6
+    },
+    {
+      "location": "Tier-2/3",
+      "vehicles": 44,
+      "drivers": 39,
+      "dlUp": 31,
+      "imeiUp": 7,
+      "rcPending": 20
+    },
+    {
+      "location": "Ahmedabad",
+      "vehicles": 8,
+      "drivers": 9,
+      "dlUp": 9,
+      "imeiUp": 1,
+      "rcPending": 6
+    },
+    {
+      "location": "Chennai",
+      "vehicles": 56,
+      "drivers": 56,
+      "dlUp": 51,
+      "imeiUp": 27,
+      "rcPending": 9
+    },
+    {
+      "location": "Bangalore",
+      "vehicles": 117,
+      "drivers": 110,
+      "dlUp": 109,
+      "imeiUp": 53,
+      "rcPending": 8
+    },
+    {
+      "location": "Hyderabad",
+      "vehicles": 63,
+      "drivers": 64,
+      "dlUp": 56,
+      "imeiUp": 37,
+      "rcPending": 10
+    },
+    {
+      "location": "Mumbai",
+      "vehicles": 79,
+      "drivers": 73,
+      "dlUp": 63,
+      "imeiUp": 40,
+      "rcPending": 11
+    },
+    {
+      "location": "Kolkata",
+      "vehicles": 39,
+      "drivers": 43,
+      "dlUp": 40,
+      "imeiUp": 28,
+      "rcPending": 0
+    },
+    {
+      "location": "Gurugram",
+      "vehicles": 109,
+      "drivers": 106,
+      "dlUp": 106,
+      "imeiUp": 86,
+      "rcPending": 2
+    },
+    {
+      "location": "Noida",
+      "vehicles": 27,
+      "drivers": 29,
+      "dlUp": 29,
+      "imeiUp": 28,
+      "rcPending": 0
+    },
+    {
+      "location": "In-Active",
+      "vehicles": 4,
+      "drivers": 3,
+      "dlUp": 0,
+      "imeiUp": 0,
+      "rcPending": 0
+    }
+  ],
+  "CVX": [
+    {
+      "location": "Pune",
+      "vehicles": 10,
+      "drivers": 10,
+      "dlUp": 3,
+      "imeiUp": 7,
+      "rcPending": 0
+    },
+    {
+      "location": "Tier-2/3",
+      "vehicles": 0,
+      "drivers": 0,
+      "dlUp": 0,
+      "imeiUp": 0,
+      "rcPending": 0
+    },
+    {
+      "location": "Ahmedabad",
+      "vehicles": 0,
+      "drivers": 0,
+      "dlUp": 0,
+      "imeiUp": 0,
+      "rcPending": 0
+    },
+    {
+      "location": "Chennai",
+      "vehicles": 18,
+      "drivers": 18,
+      "dlUp": 17,
+      "imeiUp": 1,
+      "rcPending": 0
+    },
+    {
+      "location": "Bangalore",
+      "vehicles": 17,
+      "drivers": 17,
+      "dlUp": 17,
+      "imeiUp": 13,
+      "rcPending": 0
+    },
+    {
+      "location": "Hyderabad",
+      "vehicles": 44,
+      "drivers": 43,
+      "dlUp": 40,
+      "imeiUp": 20,
+      "rcPending": 0
+    },
+    {
+      "location": "Mumbai",
+      "vehicles": 0,
+      "drivers": 0,
+      "dlUp": 0,
+      "imeiUp": 0,
+      "rcPending": 0
+    },
+    {
+      "location": "Kolkata",
+      "vehicles": 10,
+      "drivers": 15,
+      "dlUp": 15,
+      "imeiUp": 11,
+      "rcPending": 0
+    },
+    {
+      "location": "Gurugram",
+      "vehicles": 41,
+      "drivers": 41,
+      "dlUp": 41,
+      "imeiUp": 17,
+      "rcPending": 0
+    },
+    {
+      "location": "Noida",
+      "vehicles": 21,
+      "drivers": 21,
+      "dlUp": 21,
+      "imeiUp": 20,
+      "rcPending": 0
+    },
+    {
+      "location": "In-Active",
+      "vehicles": 0,
+      "drivers": 0,
+      "dlUp": 0,
+      "imeiUp": 0,
+      "rcPending": 0
+    }
+  ],
+  "CTS_VEHICLES": {
+    "models": [
+      "CRYSTA",
+      "MARUTI INVICTO",
+      "SUV",
+      "HYCROSS"
+    ],
+    "rows": [
+      {
+        "location": "Bangalore",
+        "counts": {
+          "CRYSTA": 3,
+          "HYCROSS": 14
+        }
+      },
+      {
+        "location": "Chennai",
+        "counts": {
+          "CRYSTA": 12,
+          "SUV": 1,
+          "HYCROSS": 5
+        }
+      },
+      {
+        "location": "Delhi",
+        "counts": {
+          "CRYSTA": 16,
+          "MARUTI INVICTO": 5,
+          "HYCROSS": 9
+        }
+      },
+      {
+        "location": "Hyderabad",
+        "counts": {
+          "CRYSTA": 14,
+          "MARUTI INVICTO": 3,
+          "HYCROSS": 2
+        }
+      },
+      {
+        "location": "Kolkata",
+        "counts": {
+          "CRYSTA": 7,
+          "HYCROSS": 3
+        }
+      },
+      {
+        "location": "Noida",
+        "counts": {
+          "CRYSTA": 5,
+          "MARUTI INVICTO": 1,
+          "HYCROSS": 4
+        }
+      },
+      {
+        "location": "Pune",
+        "counts": {
+          "CRYSTA": 7,
+          "HYCROSS": 3
+        }
+      },
+      {
+        "location": "Mumbai",
+        "counts": {}
+      }
+    ]
+  }
+}</script>
+
+<script>
+/* ================= LIVE CLOCK ================= */
+function pad(n){return n.toString().padStart(2,'0');}
+function tickClock(){
+  const now = new Date();
+  document.getElementById('clockDate').textContent = now.toLocaleDateString('en-IN',{weekday:'long', year:'numeric', month:'long', day:'numeric'});
+  const h = pad(now.getHours()), m = pad(now.getMinutes()), s = pad(now.getSeconds());
+  document.getElementById('clockTime').innerHTML = `${h}:${m}<span class="secs">:${s}</span>`;
+}
+tickClock(); setInterval(tickClock, 1000);
+
+/* ================= DEFAULT SAMPLE DATA ================= */
+function sampleRowsCTS(){
+  const raw = [
+    ["Pune",37,38,30,22,6],
+    ["Tier-2/3",44,39,31,7,20],
+    ["Ahmedabad",8,9,9,1,6],
+    ["Chennai",56,56,51,27,9],
+    ["Bangalore",117,110,109,53,8],
+    ["Hyderabad",63,64,56,37,10],
+    ["Mumbai",79,73,63,40,11],
+    ["Kolkata",39,43,40,28,0],
+    ["Gurugram",109,106,106,86,2],
+    ["Noida",27,29,29,28,0],
+    ["In-Active",4,3,0,0,0],
+  ];
+  return raw.map(r=>({location:r[0], vehicles:r[1], drivers:r[2], dlUp:r[3], imeiUp:r[4], rcPending:r[5]}));
+}
+function sampleRowsCVX(){
+  const raw = [
+    ["Pune",10,10,3,7,0],
+    ["Tier-2/3",0,0,0,0,0],
+    ["Ahmedabad",0,0,0,0,0],
+    ["Chennai",18,18,17,1,0],
+    ["Bangalore",17,17,17,13,0],
+    ["Hyderabad",44,43,40,20,0],
+    ["Mumbai",0,0,0,0,0],
+    ["Kolkata",10,15,15,11,0],
+    ["Gurugram",41,41,41,17,0],
+    ["Noida",21,21,21,20,0],
+    ["In-Active",0,0,0,0,0],
+  ];
+  return raw.map(r=>({location:r[0], vehicles:r[1], drivers:r[2], dlUp:r[3], imeiUp:r[4], rcPending:r[5]}));
+}
+function defaultData(){
+  return { savedAt:null, history:[], CTS: sampleRowsCTS(), CVX: sampleRowsCVX(), CTS_VEHICLES: defaultVehicleData() };
+}
+
+/* ================= VEHICLE TYPE BREAKDOWN (CTS only, manual entry) ================= */
+function defaultVehicleData(){
+  const models = ["CRYSTA","MARUTI INVICTO","SUV","HYCROSS"];
+  const raw = [
+    ["Bangalore", {"CRYSTA":3, "HYCROSS":14}],
+    ["Chennai", {"CRYSTA":12, "SUV":1, "HYCROSS":5}],
+    ["Delhi", {"CRYSTA":16, "MARUTI INVICTO":5, "HYCROSS":9}],
+    ["Hyderabad", {"CRYSTA":14, "MARUTI INVICTO":3, "HYCROSS":2}],
+    ["Kolkata", {"CRYSTA":7, "HYCROSS":3}],
+    ["Noida", {"CRYSTA":5, "MARUTI INVICTO":1, "HYCROSS":4}],
+    ["Pune", {"CRYSTA":7, "HYCROSS":3}],
+    ["Mumbai", {}],
+  ];
+  return { models, rows: raw.map(r=>({location:r[0], counts:r[1]})) };
+}
+function vehRowTotal(row, models){
+  return models.reduce((s,m)=> s + (Number(row.counts[m])||0), 0);
+}
+function vehColTotal(rows, model){
+  return rows.reduce((s,r)=> s + (Number(r.counts[model])||0), 0);
+}
+function vehGrandTotal(veh){
+  return veh.rows.reduce((s,r)=> s + vehRowTotal(r, veh.models), 0);
+}
+
+/* ================= LOAD EMBEDDED DATA ================= */
+let DATA;
+try{
+  const raw = document.getElementById('embedded-data').textContent.trim();
+  if(raw.startsWith('__EMBEDDED')){ throw new Error('placeholder'); }
+  DATA = JSON.parse(raw);
+}catch(e){
+  DATA = defaultData();
+}
+if(!DATA.history) DATA.history = [];
+if(!DATA.CTS_VEHICLES) DATA.CTS_VEHICLES = defaultVehicleData();
+let currentCo = 'CTS';
+let currentView = 'dashboard';
+
+/* ================= CALCULATIONS ================= */
+function calcRow(r){
+  const drivers = Number(r.drivers)||0, vehicles = Number(r.vehicles)||0;
+  const dlUp = Number(r.dlUp)||0, imeiUp = Number(r.imeiUp)||0, rcPending = Number(r.rcPending)||0;
+  const dlNot = Math.max(drivers - dlUp, 0);
+  const imeiNot = Math.max(drivers - imeiUp, 0);
+  const dlPct = drivers ? dlNot/drivers : 0;
+  const imeiPct = drivers ? imeiNot/drivers : 0;
+  const rcPct = vehicles ? rcPending/vehicles : 0;
+  const overallPct = (dlPct+imeiPct+rcPct)/3;
+  return {...r, vehicles, drivers, dlUp, imeiUp, rcPending, dlNot, imeiNot, dlPct, imeiPct, rcPct, overallPct};
+}
+function calcTotal(rows){
+  const sum = k => rows.reduce((a,r)=>a+(Number(r[k])||0),0);
+  const vehicles=sum('vehicles'), drivers=sum('drivers'), dlUp=sum('dlUp'), imeiUp=sum('imeiUp'), rcPending=sum('rcPending');
+  return calcRow({location:'Grand Total', vehicles, drivers, dlUp, imeiUp, rcPending});
+}
+
+/* ================= HELPERS ================= */
+function pctColor(p){
+  if(p<=15) return {c:'var(--green-600)', tag:'ok', label:'On track'};
+  if(p<=35) return {c:'var(--amber-600)', tag:'warn', label:'Needs push'};
+  return {c:'var(--red-600)', tag:'risk', label:'At risk'};
+}
+function pbar(pct){
+  const s = pctColor(pct);
+  return `<div class="pbar-wrap"><div class="pbar-track"><div class="pbar-fill" data-pct="${Math.min(pct,100)}" style="background:${s.c}"></div></div><div class="pbar-pct" style="color:${s.c}">${pct.toFixed(1)}%</div></div>`;
+}
+function animateCount(el, to){
+  const dur=700, start=performance.now();
+  function step(t){
+    const p=Math.min(1,(t-start)/dur); const eased=1-Math.pow(1-p,3);
+    const val = to*eased;
+    el.textContent = (Number.isInteger(to) ? Math.round(val) : val.toFixed(1));
+    if(p<1) requestAnimationFrame(step);
+  }
+  requestAnimationFrame(step);
+}
+
+/* ================= RENDER: DASHBOARD ================= */
+function renderDashboard(){
+  const activeRaw = DATA[currentCo].filter(r=> String(r.location).trim().toLowerCase() !== 'in-active');
+  const inactiveRaw = DATA[currentCo].filter(r=> String(r.location).trim().toLowerCase() === 'in-active');
+  const rows = activeRaw.map(calcRow);
+  const total = calcTotal(activeRaw);
+  renderInactiveTable(inactiveRaw);
+
+  const dlCompliance = total.drivers ? (total.dlUp/total.drivers*100) : 0;
+  const imeiCompliance = total.drivers ? (total.imeiUp/total.drivers*100) : 0;
+  const overallCompliance = 100 - (total.overallPct*100);
+
+  const kpis = [
+    {label:'Inducted Vehicles', value: total.vehicles, suffix:'', accent:'var(--green-500)', foot:`Across ${rows.length} locations`, footCls:''},
+    {label:'Total Drivers', value: total.drivers, suffix:'', accent:'var(--green-600)', foot:`${total.dlUp} DL uploaded`, footCls:''},
+    {label:'DL Compliance', value: dlCompliance, suffix:'%', accent:'var(--green-500)', foot:`${total.dlNot} pending`, footCls: dlCompliance>=80?'good':'bad'},
+    {label:'IMEI Compliance', value: imeiCompliance, suffix:'%', accent:'#b3791b', foot:`${total.imeiNot} pending`, footCls: imeiCompliance>=80?'good':'bad'},
+    {label:'Overall Compliance', value: overallCompliance, suffix:'%', accent: overallCompliance>=80?'var(--green-600)':'var(--red-600)', foot:`${(total.overallPct*100).toFixed(1)}% pending fleet-wide`, footCls: overallCompliance>=80?'good':'bad'},
+  ];
+  const grid = document.getElementById('kpiGrid');
+  grid.innerHTML='';
+  kpis.forEach(k=>{
+    const card=document.createElement('div');
+    card.className='kpi-card'; card.style.setProperty('--accent', k.accent);
+    card.innerHTML = `<div class="kpi-label">${k.label}</div><div class="kpi-value"><span class="num">0</span>${k.suffix?`<span class="unit">${k.suffix}</span>`:''}</div><div class="kpi-foot ${k.footCls}">${k.foot}</div>`;
+    grid.appendChild(card);
+    animateCount(card.querySelector('.num'), Math.round(k.value*10)/10);
+  });
+
+  document.getElementById('tableTitle').textContent = `Location-wise Compliance — Cognizant ${currentCo}`;
+  const tbody = document.getElementById('tableBody'); tbody.innerHTML='';
+  rows.forEach(r=>{
+    const ovPct = r.overallPct*100, status = pctColor(ovPct);
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+      <td><span class="loc-cell"><span class="loc-dot"></span>${r.location}</span></td>
+      <td>${r.vehicles}</td><td>${r.drivers}</td>
+      <td>${pbar(r.dlPct*100)}</td><td>${pbar(r.imeiPct*100)}</td>
+      <td><span class="tag ${status.tag}">${ovPct.toFixed(1)}%</span></td>`;
+    tbody.appendChild(tr);
+  });
+  const trT = document.createElement('tr'); trT.className='total-row';
+  const ovT = total.overallPct*100;
+  trT.innerHTML = `<td>${total.location}</td><td>${total.vehicles}</td><td>${total.drivers}</td>
+    <td>${pbar(total.dlPct*100)}</td><td>${pbar(total.imeiPct*100)}</td>
+    <td><span class="tag ${pctColor(ovT).tag}">${ovT.toFixed(1)}%</span></td>`;
+  tbody.appendChild(trT);
+  requestAnimationFrame(()=>{ document.querySelectorAll('.pbar-fill').forEach(el=>{ el.style.width = el.dataset.pct+'%'; }); });
+
+  const chart = document.getElementById('barChart'); chart.innerHTML='';
+  [...rows].sort((a,b)=>b.overallPct-a.overallPct).forEach(r=>{
+    const pct = r.overallPct*100, s = pctColor(pct);
+    const wrap = document.createElement('div'); wrap.className='bar-row';
+    wrap.innerHTML = `<div class="bar-loc">${r.location}</div><div class="bar-track"><div class="bar-fill" data-pct="${Math.min(pct,100)}" style="background:${s.c}"></div></div><div class="bar-val">${pct.toFixed(1)}%</div>`;
+    chart.appendChild(wrap);
+  });
+  requestAnimationFrame(()=>{ document.querySelectorAll('.bar-fill').forEach(el=>{ el.style.width = el.dataset.pct+'%'; }); });
+
+  renderMasterTable(rows, total);
+
+  const vehPanel = document.getElementById('vehiclePanel');
+  if(currentCo==='CVX'){ vehPanel.style.display='block'; renderVehicleTable(); }
+  else vehPanel.style.display='none';
+}
+
+/* ================= RENDER: VEHICLE TYPE BREAKDOWN (dashboard, read-only) ================= */
+function renderVehicleTable(){
+  const veh = DATA.CTS_VEHICLES;
+  const head = document.getElementById('vehicleHead');
+  head.innerHTML = `<th>Location</th>${veh.models.map(m=>`<th>${m}</th>`).join('')}<th>Grand Total</th>`;
+
+  const body = document.getElementById('vehicleBody');
+  body.innerHTML = '';
+  veh.rows.forEach(r=>{
+    const tr = document.createElement('tr');
+    tr.innerHTML = `<td><span class="loc-cell"><span class="loc-dot"></span>${r.location}</span></td>
+      ${veh.models.map(m=>`<td class="num-cell">${Number(r.counts[m])||0}</td>`).join('')}
+      <td class="veh-total-cell">${vehRowTotal(r, veh.models)}</td>`;
+    body.appendChild(tr);
+  });
+  const trT = document.createElement('tr'); trT.className='total-row';
+  trT.innerHTML = `<td>Grand Total</td>
+    ${veh.models.map(m=>`<td class="num-cell">${vehColTotal(veh.rows, m)}</td>`).join('')}
+    <td class="veh-total-cell">${vehGrandTotal(veh)}</td>`;
+  body.appendChild(trT);
+}
+
+/* ================= RENDER: INACTIVE (no %, just Vehicles & Drivers) ================= */
+function renderInactiveTable(inactiveRows){
+  document.getElementById('inactiveTitle').textContent = `Inactive — Cognizant ${currentCo}`;
+  const body = document.getElementById('inactiveBody');
+  body.innerHTML = '';
+  if(!inactiveRows || inactiveRows.length===0){
+    body.innerHTML = `<tr><td colspan="3" style="text-align:center;color:var(--ink-400);padding:16px;">No inactive locations</td></tr>`;
+    return;
+  }
+  let vT=0, dT=0;
+  inactiveRows.forEach(r=>{
+    const vehicles = Number(r.vehicles)||0, drivers = Number(r.drivers)||0;
+    vT += vehicles; dT += drivers;
+    const tr = document.createElement('tr');
+    tr.innerHTML = `<td><span class="loc-cell"><span class="loc-dot"></span>${r.location}</span></td>
+      <td class="num-cell">${vehicles}</td>
+      <td class="num-cell">${drivers}</td>`;
+    body.appendChild(tr);
+  });
+  const trT = document.createElement('tr'); trT.className='total-row';
+  trT.innerHTML = `<td>Total</td><td class="num-cell">${vT}</td><td class="num-cell">${dT}</td>`;
+  body.appendChild(trT);
+}
+
+/* ================= RENDER: MASTER TABLE ================= */
+function pctCell(pct){
+  const s = pctColor(pct);
+  return `<span class="pct-text" style="color:${s.c}">${pct.toFixed(1)}%</span>`;
+}
+function renderMasterTable(rows, total){
+  document.getElementById('masterTitle').textContent = `Master Table — Cognizant ${currentCo}`;
+  const body = document.getElementById('masterBody');
+  body.innerHTML = '';
+  rows.forEach(r=>{
+    const rcUp = Math.max(r.vehicles - r.rcPending, 0);
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+      <td><span class="loc-cell"><span class="loc-dot"></span>${r.location}</span></td>
+      <td class="num-cell">${r.vehicles}</td>
+      <td class="num-cell">${r.drivers}</td>
+      <td class="num-cell">${r.dlUp}</td>
+      <td class="num-cell">${r.dlNot}</td>
+      <td>${pctCell(r.dlPct*100)}</td>
+      <td class="num-cell">${r.imeiUp}</td>
+      <td class="num-cell">${r.imeiNot}</td>
+      <td>${pctCell(r.imeiPct*100)}</td>
+      <td class="num-cell rc-col">${rcUp}</td>
+      <td class="num-cell rc-col">${r.rcPending}</td>
+      <td class="rc-col">${pctCell(r.rcPct*100)}</td>
+      <td>${pctCell(r.overallPct*100)}</td>`;
+    body.appendChild(tr);
+  });
+  const rcUpT = Math.max(total.vehicles - total.rcPending, 0);
+  const trT = document.createElement('tr'); trT.className='total-row';
+  trT.innerHTML = `
+    <td>${total.location}</td>
+    <td class="num-cell">${total.vehicles}</td>
+    <td class="num-cell">${total.drivers}</td>
+    <td class="num-cell">${total.dlUp}</td>
+    <td class="num-cell">${total.dlNot}</td>
+    <td>${pctCell(total.dlPct*100)}</td>
+    <td class="num-cell">${total.imeiUp}</td>
+    <td class="num-cell">${total.imeiNot}</td>
+    <td>${pctCell(total.imeiPct*100)}</td>
+    <td class="num-cell rc-col">${rcUpT}</td>
+    <td class="num-cell rc-col">${total.rcPending}</td>
+    <td class="rc-col">${pctCell(total.rcPct*100)}</td>
+    <td>${pctCell(total.overallPct*100)}</td>`;
+  body.appendChild(trT);
+}
+
+/* ================= RENDER: EDIT ================= */
+function renderEdit(){
+  document.getElementById('editTitle').textContent = `Edit Data — Cognizant ${currentCo}`;
+  const body = document.getElementById('editBody');
+  body.innerHTML = '';
+  DATA[currentCo].forEach((r, idx)=>{
+    const c = calcRow(r);
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+      <td><input class="loc-input" data-idx="${idx}" data-field="location" value="${r.location}"></td>
+      <td><input type="number" min="0" data-idx="${idx}" data-field="vehicles" value="${r.vehicles}"></td>
+      <td><input type="number" min="0" data-idx="${idx}" data-field="drivers" value="${r.drivers}"></td>
+      <td><input type="number" min="0" data-idx="${idx}" data-field="dlUp" value="${r.dlUp}"></td>
+      <td class="computed">${(c.dlPct*100).toFixed(1)}%</td>
+      <td><input type="number" min="0" data-idx="${idx}" data-field="imeiUp" value="${r.imeiUp}"></td>
+      <td class="computed">${(c.imeiPct*100).toFixed(1)}%</td>
+      <td class="rc-col"><input type="number" min="0" data-idx="${idx}" data-field="rcPending" value="${r.rcPending}"></td>
+      <td class="computed rc-col">${(c.rcPct*100).toFixed(1)}%</td>
+      <td class="computed" style="font-weight:700;color:${pctColor(c.overallPct*100).c}">${(c.overallPct*100).toFixed(1)}%</td>
+      <td><button class="rm-btn" data-idx="${idx}" title="Remove location"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button></td>`;
+    body.appendChild(tr);
+  });
+  const total = calcTotal(DATA[currentCo]);
+  const trT = document.createElement('tr'); trT.className='total-row';
+  trT.innerHTML = `<td>Grand Total</td><td>${total.vehicles}</td><td>${total.drivers}</td>
+    <td>${total.dlUp}</td><td class="computed">${(total.dlPct*100).toFixed(1)}%</td>
+    <td>${total.imeiUp}</td><td class="computed">${(total.imeiPct*100).toFixed(1)}%</td>
+    <td class="rc-col">${total.rcPending}</td><td class="computed rc-col">${(total.rcPct*100).toFixed(1)}%</td>
+    <td class="computed" style="font-weight:700">${(total.overallPct*100).toFixed(1)}%</td><td></td>`;
+  body.appendChild(trT);
+
+  const vehEditPanel = document.getElementById('vehicleEditPanel');
+  if(currentCo==='CVX'){ vehEditPanel.style.display='block'; renderVehicleEdit(); }
+  else vehEditPanel.style.display='none';
+}
+
+/* ================= RENDER: VEHICLE TYPE BREAKDOWN (edit, manual entry) ================= */
+function renderVehicleEdit(){
+  const veh = DATA.CTS_VEHICLES;
+  const head = document.getElementById('vehicleEditHead');
+  head.innerHTML = `<th>Location</th>${veh.models.map((m,i)=>`
+    <th class="veh-model-th">
+      <input class="model-name-input" data-model-idx="${i}" value="${m}">
+      <button class="rm-col-btn" data-model-idx="${i}" title="Remove model">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+    </th>`).join('')}<th>Grand Total</th><th></th>`;
+
+  const body = document.getElementById('vehicleEditBody');
+  body.innerHTML = '';
+  veh.rows.forEach((r, idx)=>{
+    const tr = document.createElement('tr');
+    tr.innerHTML = `<td><input class="loc-input" data-veh-idx="${idx}" data-veh-field="location" value="${r.location}"></td>
+      ${veh.models.map(m=>`<td><input type="number" min="0" data-veh-idx="${idx}" data-veh-model="${m}" value="${Number(r.counts[m])||0}"></td>`).join('')}
+      <td class="computed veh-row-total" style="font-weight:700;color:var(--green-700)">${vehRowTotal(r, veh.models)}</td>
+      <td><button class="rm-btn rm-veh-btn" data-veh-idx="${idx}" title="Remove location"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button></td>`;
+    body.appendChild(tr);
+  });
+  const trT = document.createElement('tr'); trT.className='total-row';
+  trT.innerHTML = `<td>Grand Total</td>
+    ${veh.models.map(m=>`<td class="computed">${vehColTotal(veh.rows, m)}</td>`).join('')}
+    <td class="computed" style="font-weight:700">${vehGrandTotal(veh)}</td><td></td>`;
+  body.appendChild(trT);
+}
+
+(function(){
+  document.getElementById('vehicleEditBody').addEventListener('input', (e)=>{
+    const t = e.target;
+    if(!t.dataset || t.dataset.vehIdx===undefined) return;
+    const idx = Number(t.dataset.vehIdx);
+    const row = DATA.CTS_VEHICLES.rows[idx];
+    if(t.dataset.vehField==='location'){ row.location = t.value; return; }
+    if(t.dataset.vehModel!==undefined){ row.counts[t.dataset.vehModel] = Number(t.value)||0; }
+    const tr = t.closest('tr');
+    tr.querySelector('.veh-row-total').textContent = vehRowTotal(row, DATA.CTS_VEHICLES.models);
+    const totalRow = document.querySelector('#vehicleEditBody .total-row');
+    const tds = totalRow.querySelectorAll('td.computed');
+    DATA.CTS_VEHICLES.models.forEach((m,i)=>{ tds[i].textContent = vehColTotal(DATA.CTS_VEHICLES.rows, m); });
+    tds[tds.length-1].textContent = vehGrandTotal(DATA.CTS_VEHICLES);
+    markUnsaved();
+  });
+  document.getElementById('vehicleEditBody').addEventListener('click', (e)=>{
+    const btn = e.target.closest('.rm-veh-btn'); if(!btn) return;
+    DATA.CTS_VEHICLES.rows.splice(Number(btn.dataset.vehIdx),1);
+    renderVehicleEdit(); markUnsaved();
+  });
+  document.getElementById('vehicleEditHead').addEventListener('change', (e)=>{
+    const t = e.target;
+    if(!t.classList.contains('model-name-input')) return;
+    const i = Number(t.dataset.modelIdx);
+    const oldName = DATA.CTS_VEHICLES.models[i];
+    const newName = t.value.trim() || oldName;
+    DATA.CTS_VEHICLES.models[i] = newName;
+    if(newName!==oldName){
+      DATA.CTS_VEHICLES.rows.forEach(r=>{
+        if(oldName in r.counts){ r.counts[newName] = r.counts[oldName]; delete r.counts[oldName]; }
+      });
+    }
+    renderVehicleEdit(); markUnsaved();
+  });
+  document.getElementById('vehicleEditHead').addEventListener('click', (e)=>{
+    const btn = e.target.closest('.rm-col-btn'); if(!btn) return;
+    const i = Number(btn.dataset.modelIdx);
+    const name = DATA.CTS_VEHICLES.models[i];
+    DATA.CTS_VEHICLES.models.splice(i,1);
+    DATA.CTS_VEHICLES.rows.forEach(r=>{ delete r.counts[name]; });
+    renderVehicleEdit(); markUnsaved();
+  });
+})();
+
+document.getElementById('addVehicleRowBtn').addEventListener('click', ()=>{
+  DATA.CTS_VEHICLES.rows.push({location:'New Location', counts:{}});
+  renderVehicleEdit(); markUnsaved();
+});
+document.getElementById('addVehicleModelBtn').addEventListener('click', ()=>{
+  let n = 1, name = 'New Model';
+  while(DATA.CTS_VEHICLES.models.includes(name)){ n++; name = `New Model ${n}`; }
+  DATA.CTS_VEHICLES.models.push(name);
+  renderVehicleEdit(); markUnsaved();
+});
+
+(function(){
+  document.getElementById('editBody').addEventListener('input', (e)=>{
+    const t = e.target;
+    if(!t.dataset || t.dataset.idx===undefined) return;
+    const idx = Number(t.dataset.idx), field = t.dataset.field;
+    DATA[currentCo][idx][field] = field==='location' ? t.value : Number(t.value);
+    // update just the computed cells + total row without full re-render (keeps focus)
+    const c = calcRow(DATA[currentCo][idx]);
+    const tr = t.closest('tr');
+    const cells = tr.querySelectorAll('.computed');
+    cells[0].textContent = (c.dlPct*100).toFixed(1)+'%';
+    cells[1].textContent = (c.imeiPct*100).toFixed(1)+'%';
+    cells[2].textContent = (c.rcPct*100).toFixed(1)+'%';
+    const overallCell = tr.querySelectorAll('.computed')[3];
+    overallCell.textContent = (c.overallPct*100).toFixed(1)+'%';
+    overallCell.style.color = pctColor(c.overallPct*100).c;
+    // refresh total row
+    const total = calcTotal(DATA[currentCo]);
+    const totalRow = document.querySelector('#editBody .total-row');
+    const tds = totalRow.querySelectorAll('td');
+    tds[1].textContent = total.vehicles; tds[2].textContent = total.drivers;
+    tds[3].textContent = total.dlUp; tds[4].textContent = (total.dlPct*100).toFixed(1)+'%';
+    tds[5].textContent = total.imeiUp; tds[6].textContent = (total.imeiPct*100).toFixed(1)+'%';
+    tds[7].textContent = total.rcPending; tds[8].textContent = (total.rcPct*100).toFixed(1)+'%';
+    tds[9].textContent = (total.overallPct*100).toFixed(1)+'%';
+    markUnsaved();
+  });
+  document.getElementById('editBody').addEventListener('click', (e)=>{
+    const btn = e.target.closest('.rm-btn');
+    if(!btn) return;
+    const idx = Number(btn.dataset.idx);
+    DATA[currentCo].splice(idx,1);
+    renderEdit(); markUnsaved();
+  });
+})();
+
+document.getElementById('addRowBtn').addEventListener('click', ()=>{
+  DATA[currentCo].push({location:'New Location', vehicles:0, drivers:0, dlUp:0, imeiUp:0, rcPending:0});
+  renderEdit(); markUnsaved();
+});
+
+/* ================= VIEW / COMPANY TABS ================= */
+document.getElementById('viewTabs').addEventListener('click', (e)=>{
+  const btn = e.target.closest('.tab-btn'); if(!btn) return;
+  document.querySelectorAll('#viewTabs .tab-btn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  currentView = btn.dataset.view;
+  document.getElementById('dashboardPanel').style.display = currentView==='dashboard' ? 'block' : 'none';
+  document.getElementById('editPanel').style.display = currentView==='edit' ? 'block' : 'none';
+  document.getElementById('historyPanel').style.display = currentView==='history' ? 'block' : 'none';
+  if(currentView==='dashboard') renderDashboard();
+  else if(currentView==='edit') renderEdit();
+  else renderHistory();
+});
+document.getElementById('coTabs').addEventListener('click', (e)=>{
+  const btn = e.target.closest('.tab-btn'); if(!btn) return;
+  document.querySelectorAll('#coTabs .tab-btn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  currentCo = btn.dataset.co;
+  document.body.classList.toggle('hide-rc', currentCo==='CVX');
+  if(currentView==='dashboard') renderDashboard();
+  else if(currentView==='edit') renderEdit();
+  else renderHistory();
+});
+
+/* ================= HISTORY: LOG + RENDER ================= */
+function logSnapshot(){
+  const today = new Date();
+  const dateKey = today.toISOString().slice(0,10);
+  const entry = {
+    date: dateKey,
+    savedAt: today.toISOString(),
+    CTS: calcTotal(DATA.CTS),
+    CVX: calcTotal(DATA.CVX),
+  };
+  const idx = DATA.history.findIndex(h=>h.date===dateKey);
+  if(idx>=0) DATA.history[idx] = entry; else DATA.history.push(entry);
+  DATA.history.sort((a,b)=> a.date.localeCompare(b.date));
+}
+
+function fmtDateShort(dateKey){
+  const d = new Date(dateKey+'T00:00:00');
+  return d.toLocaleDateString('en-IN', {day:'2-digit', month:'short'});
+}
+
+function buildTrendSVG(points){
+  const w=920, h=220, padL=40, padR=16, padT=18, padB=34;
+  const chartW = w-padL-padR, chartH = h-padT-padB;
+  const vals = points.map(p=>p.overallPct*100);
+  let max = Math.max(...vals, 5), min = Math.min(...vals, 0);
+  if(max===min){ max = max+5; min = Math.max(min-5,0); }
+  const range = max-min;
+  const stepX = points.length>1 ? chartW/(points.length-1) : 0;
+  const coords = points.map((p,i)=>{
+    const x = padL + (points.length>1 ? stepX*i : chartW/2);
+    const y = padT + (1 - (p.overallPct*100 - min)/range) * chartH;
+    return {x,y,pct:p.overallPct*100,date:p.date};
+  });
+  const linePath = coords.map((c,i)=> (i===0?'M':'L') + c.x.toFixed(1) + ',' + c.y.toFixed(1)).join(' ');
+  const areaPath = linePath + ` L${coords[coords.length-1].x.toFixed(1)},${(padT+chartH).toFixed(1)} L${coords[0].x.toFixed(1)},${(padT+chartH).toFixed(1)} Z`;
+
+  const gridLines = [0,0.5,1].map(f=>{
+    const val = max - f*range;
+    const y = padT + f*chartH;
+    return `<line class="grid-line" x1="${padL}" y1="${y}" x2="${w-padR}" y2="${y}"/><text class="value-label" x="${padL-8}" y="${y+3}" text-anchor="end">${val.toFixed(0)}%</text>`;
+  }).join('');
+
+  const labelEvery = Math.ceil(coords.length/10);
+  const dateLabels = coords.map((c,i)=> i%labelEvery===0 || i===coords.length-1 ? `<text class="axis-label" x="${c.x}" y="${h-10}" text-anchor="middle">${fmtDateShort(c.date)}</text>` : '').join('');
+
+  const dots = coords.map(c=>`<circle class="trend-dot" cx="${c.x}" cy="${c.y}" r="4"><title>${fmtDateShort(c.date)}: ${c.pct.toFixed(1)}% pending</title></circle>`).join('');
+
+  return `<svg viewBox="0 0 ${w} ${h}" xmlns="http://www.w3.org/2000/svg">
+    <defs><linearGradient id="trendFill" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#3d9467" stop-opacity="0.22"/>
+      <stop offset="100%" stop-color="#3d9467" stop-opacity="0"/>
+    </linearGradient></defs>
+    ${gridLines}
+    <path class="trend-area" d="${areaPath}"/>
+    <path class="trend-line" d="${linePath}"/>
+    ${dots}
+    ${dateLabels}
+  </svg>`;
+}
+
+function deltaPill(curr, prev){
+  if(prev===undefined) return `<span class="delta-pill flat">First entry</span>`;
+  const diff = curr - prev; // percentage points, negative = improvement
+  if(Math.abs(diff) < 0.05) return `<span class="delta-pill flat">No change</span>`;
+  const improved = diff < 0;
+  const arrow = improved
+    ? '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><path d="M12 19V5M5 12l7-7 7 7"/></svg>'
+    : '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><path d="M12 5v14M19 12l-7 7-7-7"/></svg>';
+  return `<span class="delta-pill ${improved?'better':'worse'}">${arrow}${Math.abs(diff).toFixed(1)} pts ${improved?'better':'worse'}</span>`;
+}
+
+function renderHistory(){
+  const hist = DATA.history.map(h=>({date:h.date, ...h[currentCo]})).sort((a,b)=>a.date.localeCompare(b.date));
+  const emptyEl = document.getElementById('historyEmpty');
+  const contentEl = document.getElementById('historyContent');
+
+  if(hist.length===0){
+    emptyEl.style.display='block'; contentEl.style.display='none';
+    return;
+  }
+  emptyEl.style.display='none'; contentEl.style.display='block';
+
+  document.getElementById('historyChartTitle').textContent = `Overall Pending % Trend — Cognizant ${currentCo}`;
+  document.getElementById('historyTableTitle').textContent = `Day-by-Day Comparison — Cognizant ${currentCo}`;
+
+  const latest = hist[hist.length-1], first = hist[0];
+  const best = hist.reduce((a,b)=> b.overallPct < a.overallPct ? b : a);
+  const daysTracked = hist.length;
+  const sinceFirstDiff = (latest.overallPct - first.overallPct)*100;
+
+  const summary = [
+    {label:'Latest Overall Pending', value:(latest.overallPct*100).toFixed(1)+'%', foot: fmtDateShort(latest.date), accent:'var(--green-600)'},
+    {label:'Since First Log', value:(sinceFirstDiff<=0?'-':'+')+Math.abs(sinceFirstDiff).toFixed(1)+' pts', foot: sinceFirstDiff<=0 ? 'Improved overall' : 'Worse overall', accent: sinceFirstDiff<=0?'var(--green-600)':'var(--red-600)'},
+    {label:'Best Day', value:(best.overallPct*100).toFixed(1)+'%', foot: fmtDateShort(best.date), accent:'var(--green-500)'},
+    {label:'Days Tracked', value:daysTracked, foot: daysTracked===1?'Save again tomorrow':'Keep logging daily', accent:'#b3791b'},
+  ];
+  const sEl = document.getElementById('historySummary');
+  sEl.innerHTML='';
+  summary.forEach(s=>{
+    const card = document.createElement('div');
+    card.className='kpi-card'; card.style.setProperty('--accent', s.accent);
+    card.innerHTML = `<div class="kpi-label">${s.label}</div><div class="kpi-value">${s.value}</div><div class="kpi-foot">${s.foot}</div>`;
+    sEl.appendChild(card);
+  });
+
+  document.getElementById('historyChart').innerHTML = buildTrendSVG(hist);
+
+  const tbody = document.getElementById('historyBody');
+  tbody.innerHTML='';
+  hist.forEach((h,i)=>{
+    const prev = i>0 ? hist[i-1].overallPct*100 : undefined;
+    const ovPct = h.overallPct*100, status = pctColor(ovPct);
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+      <td style="font-weight:600">${fmtDateShort(h.date)}</td>
+      <td>${h.vehicles}</td><td>${h.drivers}</td>
+      <td>${(h.dlPct*100).toFixed(1)}%</td><td>${(h.imeiPct*100).toFixed(1)}%</td>
+      <td><span class="tag ${status.tag}">${ovPct.toFixed(1)}%</span></td>
+      <td>${deltaPill(ovPct, prev)}</td>`;
+    tbody.appendChild(tr);
+  });
+}
+
+/* ================= SAVE & DOWNLOAD (embeds data into the file) ================= */
+function markUnsaved(){
+  const el = document.getElementById('saveStatus');
+  el.innerHTML = `Unsaved changes &middot; click <b>Save &amp; Download</b>`;
+  el.classList.remove('flash');
+}
+document.getElementById('saveBtn').addEventListener('click', ()=>{
+  logSnapshot();
+  DATA.savedAt = new Date().toISOString();
+  const dataScript = document.getElementById('embedded-data');
+  dataScript.textContent = JSON.stringify(DATA, null, 2);
+
+  const clone = document.documentElement.cloneNode(true);
+  const html = '<!DOCTYPE html>\n' + clone.outerHTML;
+  const blob = new Blob([html], {type:'text/html'});
+  const url = URL.createObjectURL(blob);
+  const stamp = new Date().toISOString().slice(0,16).replace(/[:T]/g,'-');
+  const a = document.createElement('a');
+  a.href = url; a.download = `Cognizant_Compliance_Status_${stamp}.html`;
+  document.body.appendChild(a); a.click(); document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+
+  const savedLabel = new Date().toLocaleString('en-IN', {day:'2-digit', month:'short', hour:'2-digit', minute:'2-digit'});
+  document.getElementById('savedAt').textContent = savedLabel;
+  const el = document.getElementById('saveStatus');
+  el.innerHTML = `Saved &amp; downloaded &middot; <b id="savedAt">${savedLabel}</b>`;
+  el.classList.add('flash');
+  if(currentView==='history') renderHistory();
+});
+
+/* ================= INIT ================= */
+document.body.classList.toggle('hide-rc', currentCo==='CVX');
+if(DATA.savedAt){
+  document.getElementById('savedAt').textContent = new Date(DATA.savedAt).toLocaleString('en-IN', {day:'2-digit', month:'short', hour:'2-digit', minute:'2-digit'});
+}
+renderDashboard();
+renderEdit();
+</script>
+
+
+</body></html>
